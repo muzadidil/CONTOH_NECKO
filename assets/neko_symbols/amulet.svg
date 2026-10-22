@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="brocade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00acc1"/>
+      <stop offset="50%" stop-color="#00838f"/>
+      <stop offset="100%" stop-color="#006064"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Golden String Loop -->
+  <path d="M60 16 Q60 30 52 38 M60 16 Q60 30 68 38" fill="none" stroke="#ffd700" stroke-width="2.5"/>
+  <circle cx="60" cy="36" r="4" fill="#ffd700"/>
+
+  <!-- Traditional Amulet Pouch Shape -->
+  <path d="M44 38 L76 38 L84 46 L84 94 L36 94 L36 46 Z" fill="url(#brocade)" stroke="#ffd700" stroke-width="2.5"/>
+
+  <!-- Golden Knotted Ribbon -->
+  <path d="M50 44 L70 44 L60 52 Z" fill="#ffd700"/>
+
+  <!-- White Label: 開運 (Good Fortune) -->
+  <rect x="46" y="56" width="28" height="30" rx="3" fill="#fffde7" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="60" y="69" font-size="10" font-family="'Segoe UI', sans-serif" font-weight="900" fill="#b71c1c" text-anchor="middle">開</text>
+  <text x="60" y="81" font-size="10" font-family="'Segoe UI', sans-serif" font-weight="900" fill="#b71c1c" text-anchor="middle">運</text>
+</svg>

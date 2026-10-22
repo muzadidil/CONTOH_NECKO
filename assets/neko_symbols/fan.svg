@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="fanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ab47bc"/>
+      <stop offset="50%" stop-color="#7b1fa2"/>
+      <stop offset="100%" stop-color="#4a148c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fan Arc -->
+  <path d="M18 78 C24 38 96 38 102 78 L68 96 Z" fill="url(#fanGrad)" stroke="#ffd700" stroke-width="2.5"/>
+
+  <!-- Fan Ribs -->
+  <line x1="60" y1="96" x2="26" y2="54" stroke="#ffd54f" stroke-width="1.5"/>
+  <line x1="60" y1="96" x2="42" y2="44" stroke="#ffd54f" stroke-width="1.5"/>
+  <line x1="60" y1="96" x2="60" y2="40" stroke="#ffd54f" stroke-width="1.5"/>
+  <line x1="60" y1="96" x2="78" y2="44" stroke="#ffd54f" stroke-width="1.5"/>
+  <line x1="60" y1="96" x2="94" y2="54" stroke="#ffd54f" stroke-width="1.5"/>
+
+  <!-- Cherry Blossom (Sakura) Motif on Fan -->
+  <g fill="#ff80ab" stroke="#fff" stroke-width="0.8" transform="translate(60, 56)">
+    <circle cx="0" cy="-6" r="4"/>
+    <circle cx="6" cy="-2" r="4"/>
+    <circle cx="4" cy="5" r="4"/>
+    <circle cx="-4" cy="5" r="4"/>
+    <circle cx="-6" cy="-2" r="4"/>
+    <circle cx="0" cy="0" r="2.5" fill="#ffd600"/>
+  </g>
+
+  <!-- Rivet Pivot -->
+  <circle cx="60" cy="96" r="4" fill="#ffd700" stroke="#5d4037" stroke-width="1"/>
+</svg>

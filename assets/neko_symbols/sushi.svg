@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="salmon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8a65"/>
+      <stop offset="50%" stop-color="#ff7043"/>
+      <stop offset="100%" stop-color="#f4511e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Wooden Plate -->
+  <rect x="18" y="74" width="84" height="12" rx="4" fill="#8d6e63" stroke="#5d4037" stroke-width="2"/>
+
+  <!-- Rice Cushion -->
+  <path d="M30 64 C30 52 90 52 90 64 L86 74 L34 74 Z" fill="#fffde7" stroke="#e0e0e0" stroke-width="1.5"/>
+
+  <!-- Salmon Sashimi -->
+  <path d="M22 56 C26 40 94 40 98 56 C96 66 90 68 22 56 Z" fill="url(#salmon)" stroke="#d84315" stroke-width="2"/>
+  
+  <!-- White Fat Marbling Strips -->
+  <path d="M40 44 Q50 56 46 62 M55 42 Q65 56 62 62 M70 44 Q80 56 78 62" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+
+  <!-- Seaweed Ribbon (Nori) -->
+  <rect x="52" y="44" width="16" height="30" rx="2" fill="#1b5e20" stroke="#004d40" stroke-width="1.5"/>
+</svg>

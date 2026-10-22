@@ -1,0 +1,13 @@
+# Python & Inspection Scripts
+*.py
+*.log
+inspect_frames/
+live_neko*.png
+raw_index.html
+__pycache__/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

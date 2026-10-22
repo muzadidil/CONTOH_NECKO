@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <radialGradient id="skin" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffde7"/>
+      <stop offset="80%" stop-color="#fff8e1"/>
+      <stop offset="100%" stop-color="#ffe082"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Wooden Drum Body -->
+  <path d="M32 30 L88 30 L94 86 L26 86 Z" fill="#b71c1c" stroke="#5d4037" stroke-width="2.5"/>
+
+  <!-- Drum Head (Round Face) -->
+  <ellipse cx="60" cy="40" rx="38" ry="18" fill="url(#skin)" stroke="#8d6e63" stroke-width="2"/>
+
+  <!-- Tomoe Crest (Triple Swirl) in Center -->
+  <circle cx="60" cy="40" r="10" fill="none" stroke="#212121" stroke-width="2"/>
+  <circle cx="58" cy="38" r="2.5" fill="#212121"/>
+  <circle cx="62" cy="38" r="2.5" fill="#212121"/>
+  <circle cx="60" cy="42" r="2.5" fill="#212121"/>
+
+  <!-- Metal Studs / Rivets -->
+  <circle cx="28" cy="46" r="2" fill="#ffd700"/>
+  <circle cx="44" cy="50" r="2" fill="#ffd700"/>
+  <circle cx="60" cy="52" r="2" fill="#ffd700"/>
+  <circle cx="76" cy="50" r="2" fill="#ffd700"/>
+  <circle cx="92" cy="46" r="2" fill="#ffd700"/>
+
+  <!-- Drumsticks (Bachi) Crossed -->
+  <line x1="28" y1="96" x2="68" y2="60" stroke="#ffcc80" stroke-width="4" stroke-linecap="round"/>
+  <line x1="92" y1="96" x2="52" y2="60" stroke="#ffcc80" stroke-width="4" stroke-linecap="round"/>
+</svg>

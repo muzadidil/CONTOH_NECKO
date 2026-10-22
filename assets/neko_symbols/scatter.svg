@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="scBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff5252"/>
+      <stop offset="50%" stop-color="#d50000"/>
+      <stop offset="100%" stop-color="#311b92"/>
+    </linearGradient>
+    <linearGradient id="toriiGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff9c4"/>
+      <stop offset="50%" stop-color="#fbc02d"/>
+      <stop offset="100%" stop-color="#f57f17"/>
+    </linearGradient>
+    <filter id="scSh">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <circle cx="60" cy="60" r="52" fill="url(#scBg)" stroke="#ffd700" stroke-width="3" filter="url(#scSh)"/>
+  
+  <!-- Torii Gate Silhouette / Gold -->
+  <g fill="url(#toriiGold)" stroke="#b78103" stroke-width="1.2">
+    <!-- Top curved beam -->
+    <path d="M22 28 Q60 22 98 28 L96 34 Q60 30 24 34 Z"/>
+    <!-- Second beam -->
+    <rect x="28" y="38" width="64" height="5" rx="1"/>
+    <!-- Pillars -->
+    <rect x="36" y="34" width="7" height="52" rx="1.5"/>
+    <rect x="77" y="34" width="7" height="52" rx="1.5"/>
+    <!-- Center Tablet -->
+    <rect x="56" y="33" width="8" height="10" rx="1" fill="#d50000"/>
+  </g>
+
+  <!-- Big Gold Coin Behind Gate -->
+  <circle cx="60" cy="56" r="14" fill="#ffd700" stroke="#fff8e1" stroke-width="1.5" opacity="0.95"/>
+  <rect x="56" y="52" width="8" height="8" fill="#d50000" rx="1"/>
+
+  <!-- SCATTER Ribbon -->
+  <g transform="translate(60, 94)">
+    <rect x="-44" y="-10" width="88" height="20" rx="6" fill="#ffd700" stroke="#fff" stroke-width="1.5"/>
+    <text x="0" y="4" font-size="11" font-family="'Arial Black', Impact, sans-serif" font-weight="900" fill="#b71c1c" text-anchor="middle" letter-spacing="1">SCATTER</text>
+  </g>
+</svg>
