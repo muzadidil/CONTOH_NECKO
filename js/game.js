@@ -157,26 +157,31 @@
     return waitMs(state.isTurbo ? turboMs : normalMs);
   }
 
-  // Weighted Symbol Pool for Authentic PG Soft Lucky Neko
+  // Weighted Symbol Pool for Authentic PG Soft Lucky Neko (96.73% RTP, Medium Volatility, Frequent Cascades & Cat Multipliers)
   const WEIGHTED_POOL = [
-    { type: 'neko', weight: 7 },
-    { type: 'scatter', weight: 4 },
-    { type: 'wild', weight: 4 },
-    { type: 'drum', weight: 13 },
-    { type: 'lantern', weight: 14 },
-    { type: 'fan', weight: 16 },
-    { type: 'f_sushi', weight: 18 },
-    { type: 'sushi', weight: 18 },
-    { type: 'card_a', weight: 24 },
-    { type: 'card_k', weight: 26 },
-    { type: 'card_q', weight: 28 },
-    { type: 'card_j', weight: 30 },
-    { type: 'card_10', weight: 32 }
+    { type: 'neko', weight: 15 },
+    { type: 'scatter', weight: 5 },
+    { type: 'wild', weight: 7 },
+    { type: 'drum', weight: 18 },
+    { type: 'lantern', weight: 18 },
+    { type: 'fan', weight: 19 },
+    { type: 'f_sushi', weight: 20 },
+    { type: 'sushi', weight: 20 },
+    { type: 'card_a', weight: 21 },
+    { type: 'card_k', weight: 22 },
+    { type: 'card_q', weight: 23 },
+    { type: 'card_j', weight: 23 },
+    { type: 'card_10', weight: 24 }
   ];
 
   const REGULAR_TYPES = ['neko', 'drum', 'lantern', 'fan', 'f_sushi', 'sushi', 'card_a', 'card_k', 'card_q', 'card_j', 'card_10'];
+  const HIGH_TYPES = ['neko', 'drum', 'lantern', 'fan', 'f_sushi', 'sushi'];
 
-  function pickRandomType(allowSpecial = true, allowWild = true) {
+  function pickRandomType(allowSpecial = true, allowWild = true, preferredTypes = null) {
+    // Reel strip clustering: if preferredTypes are active for this spin/cascade, bias towards them
+    if (preferredTypes && preferredTypes.length > 0 && Math.random() < 0.38) {
+      return preferredTypes[Math.floor(Math.random() * preferredTypes.length)];
+    }
     const pool = WEIGHTED_POOL.filter(i => {
       if (!allowSpecial && (i.type === 'scatter' || i.type === 'wild')) return false;
       if (!allowWild && i.type === 'wild') return false;
@@ -191,20 +196,20 @@
     return 'drum';
   }
 
-  function createCell(type = null, span = 1, frame = null, allowWild = true) {
-    const cellType = type || pickRandomType(span === 1, allowWild);
+  function createCell(type = null, span = 1, frame = null, allowWild = true, preferredTypes = null) {
+    const cellType = type || pickRandomType(span === 1, allowWild, preferredTypes);
     let silver = false;
     let gold = false;
 
     if (frame === 'silver') silver = true;
     else if (frame === 'gold') gold = true;
     else if (frame === null && !['scatter', 'wild'].includes(cellType)) {
+      // Official PG Soft Wilds-on-the-Way Rule:
+      // Symbols occupying 2 to 4 spaces on reels 2, 3, 4, and 5 frequently appear with Silver/Gold frames
       if (span >= 2) {
         const r = Math.random();
-        if (r < 0.42) silver = true;
-        else if (r < 0.62) gold = true;
-      } else if (Math.random() < 0.14) {
-        silver = true;
+        if (r < 0.54) silver = true;
+        else if (r < 0.76) gold = true;
       }
     }
 
@@ -220,29 +225,50 @@
   }
 
   // Generate a column of cells whose spans sum to PLAYABLE_ROWS (5)
-  function generateColumnCells(colIndex) {
-    // Columns 0 and 5 only have 1x1 symbols and NEVER have Wild; Columns 1, 2, 3, 4 can have Wild & multi-row symbols (1x1..1x4)
+  function generateColumnCells(colIndex, preferredTypes = null) {
+    // Columns 0 and 5 only have 1x1 symbols and NEVER have Wild or Silver/Gold frames
     if (colIndex === 0 || colIndex === 5) {
       const col = [];
       for (let r = 0; r < PLAYABLE_ROWS; r++) {
-        col.push(createCell(null, 1, 'none', false));
+        col.push(createCell(null, 1, 'none', false, preferredTypes));
       }
       return col;
     }
 
+    // Columns 1, 2, 3, 4 (Reels 2..5) can have Wild, Silver/Gold frames & multi-row symbols (1x1..1x4)
     const col = [];
     let remaining = PLAYABLE_ROWS;
     while (remaining > 0) {
       let span = 1;
-      if (remaining >= 2 && Math.random() < 0.44) {
-        const maxSpan = Math.min(3, remaining);
+      if (remaining >= 2 && Math.random() < 0.48) {
+        const maxSpan = Math.min(4, remaining);
         span = 2 + Math.floor(Math.random() * (maxSpan - 1));
       }
-      const symType = pickRandomType(span === 1, true);
-      col.push(createCell(symType, span, null, true));
+      const symType = pickRandomType(span === 1, true, preferredTypes);
+      col.push(createCell(symType, span, null, true, preferredTypes));
       remaining -= span;
     }
     return col;
+  }
+
+  // Pick a symbol for Silver->Gold Roulette transformation that connects with Reels 1-2 for Wilds-on-the-Way chains
+  function pickRouletteGoldSymbol() {
+    const candidateSet = new Set();
+    if (state.grid[0]) {
+      state.grid[0].forEach(cell => {
+        if (cell && REGULAR_TYPES.includes(cell.type)) candidateSet.add(cell.type);
+      });
+    }
+    if (state.grid[1]) {
+      state.grid[1].forEach(cell => {
+        if (cell && REGULAR_TYPES.includes(cell.type)) candidateSet.add(cell.type);
+      });
+    }
+    const candidates = Array.from(candidateSet);
+    if (candidates.length > 0 && Math.random() < 0.74) {
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+    return REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
   }
 
   // Initialize with the exact 10,800 CARA attract board from the live PG Soft Lucky Neko game
@@ -653,10 +679,12 @@
         const tCoords = [];
 
         // Check main reel column c
+        // Multi-space WILD symbols converted from Gold frames represent their full span in ways calculations
         const colCells = state.grid[c] || [];
         colCells.forEach((cell, idx) => {
           if (cell && (cell.type === symType || cell.type === 'wild')) {
-            countInCol++;
+            const symWeight = cell.type === 'wild' ? Math.max(1, cell.span || 1) : 1;
+            countInCol += symWeight;
             mCoords.push({ c, idx });
           }
         });
@@ -738,6 +766,10 @@
 
     if (newCatItems.length > 0) {
       const isMultiple = newCatItems.length > 1;
+      // Show "SETIAP [NEKO] AKAN MEMBERIKAN PENGALI X2!" on Infoboard if not currently showing a win amount
+      if (els.ibTipSprite && !els.bannerWin.classList.contains('win-mode')) {
+        els.ibTipSprite.src = `${NEKO_DIR}info_6_text_tight.png`;
+      }
       // 1. Spawn wobble & golden pulse on Neko tiles (symMultiSpawn)
       window.MahjongSound.playCatSpawn();
       newCatItems.forEach(({ slot }) => slot.classList.add('cat-bounce'));
@@ -841,14 +873,30 @@
 
     await sleep(420, 150);
 
-    // 2. Generate New Symbols for Top Reel and Main 6x5 Reel
+    // 2. Generate New Symbols for Top Reel and Main 6x5 Reel with Authentic PG Soft Reel Strip Clustering
+    const isHotWave = !forcedMode && Math.random() < (state.inFreeSpins ? 0.34 : 0.22);
+    const featuredPrimary = isHotWave
+      ? HIGH_TYPES[Math.floor(Math.random() * HIGH_TYPES.length)]
+      : REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
+    const featuredSecondary = HIGH_TYPES[Math.floor(Math.random() * HIGH_TYPES.length)];
+    const spinPreferred = isHotWave ? [featuredPrimary, featuredSecondary, 'neko'] : [featuredPrimary];
+
     state.topGrid = [];
     for (let i = 0; i < TOP_REEL_CELLS; i++) {
-      state.topGrid.push(createCell(null, 1));
+      state.topGrid.push(createCell(null, 1, 'none', true, spinPreferred));
     }
     state.grid = [];
     for (let c = 0; c < COLS; c++) {
-      state.grid.push(generateColumnCells(c));
+      state.grid.push(generateColumnCells(c, c <= 4 ? spinPreferred : null));
+    }
+
+    // On a Hot Wave spin, ensure at least 1-2 Cat Multipliers and strong Reel 1-3 connectivity
+    if (isHotWave) {
+      state.grid[0][0] = createCell(featuredPrimary, 1, 'none', false);
+      state.grid[0][2] = createCell('neko', 1, 'none', false);
+      if (Math.random() < 0.65) {
+        state.topGrid[1] = createCell('neko', 1, 'none', true);
+      }
     }
 
     // Apply Forced Demo / Feature Buy Outcomes if requested
@@ -863,12 +911,15 @@
       state.grid[5][2] = createCell('scatter', 1, 'none');
     } else if (forcedMode === 'cat_win') {
       state.topGrid[0] = createCell('neko', 1, 'none');
+      state.topGrid[1] = createCell('drum', 1, 'none');
       state.topGrid[2] = createCell('neko', 1, 'none');
       state.grid[0][0] = createCell('drum', 1, 'none');
       state.grid[0][1] = createCell('neko', 1, 'none');
+      state.grid[0][2] = createCell('drum', 1, 'none');
       state.grid[1] = [createCell('drum', 2, 'gold'), createCell('neko', 3, 'silver')];
       state.grid[2] = [createCell('wild', 2, 'none'), createCell('drum', 3, 'gold')];
-      state.grid[3] = [createCell('drum', 2, 'silver'), createCell('wild', 1, 'none'), createCell('neko', 2, 'none')];
+      state.grid[3] = [createCell('drum', 2, 'silver'), createCell('wild', 1, 'none'), createCell('neko', 2, 'gold')];
+      state.grid[4] = [createCell('drum', 2, 'gold'), createCell('neko', 2, 'silver'), createCell('wild', 1, 'none')];
     }
 
     // 3. Stop Top Horizontal Reel & Main Reels Left-to-Right (with 3-Scatter Slowdrop Anticipation)
@@ -901,6 +952,9 @@
 
       if (!slowdropActive && landedScatters >= 3 && c < COLS - 1 && !state.isTurbo) {
         slowdropActive = true;
+        if (els.ibTipSprite) {
+          els.ibTipSprite.src = `${NEKO_DIR}info_5_text_tight.png`; // "SATU TAMBAHAN SCATTER!"
+        }
         window.MahjongSound.playSlowdropStart();
       }
     }
@@ -987,7 +1041,7 @@
         if (!cell) continue;
 
         if (cell.silver) {
-          cell.type = REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
+          cell.type = pickRouletteGoldSymbol();
           cell.silver = false;
           cell.gold = true;
           cell._badgeLaunched = false;
@@ -1042,6 +1096,13 @@
 
       setBoardWinDimmer(false);
 
+      // Collect active symbols on Reel 1-2 so cascade drops naturally chain multi-step wins
+      const cascadePreferred = [];
+      (state.grid[0] || []).forEach(cell => {
+        if (cell && REGULAR_TYPES.includes(cell.type)) cascadePreferred.push(cell.type);
+      });
+      if (state.inFreeSpins || cascadeStep >= 1) cascadePreferred.push('neko');
+
       // Refill Top Horizontal Reel (slides right-to-left by exact column delta)
       const topSurvivors = state.topGrid.filter(x => x !== null);
       const topShatteredCount = TOP_REEL_CELLS - topSurvivors.length;
@@ -1050,7 +1111,7 @@
           cell.slideCols = Math.max(0, (cell._oldIdx !== undefined ? cell._oldIdx : newIdx) - newIdx);
         });
         while (topSurvivors.length < TOP_REEL_CELLS) {
-          const newTopCell = createCell(null, 1, 'none', true);
+          const newTopCell = createCell(null, 1, 'none', true, cascadePreferred);
           newTopCell.slideCols = topShatteredCount;
           topSurvivors.push(newTopCell);
         }
@@ -1070,11 +1131,11 @@
           while (usedRows < PLAYABLE_ROWS) {
             const rem = PLAYABLE_ROWS - usedRows;
             let span = 1;
-            if (c >= 1 && c <= 4 && rem >= 2 && Math.random() < 0.35) {
+            if (c >= 1 && c <= 4 && rem >= 2 && Math.random() < 0.42) {
               span = 2;
             }
             const allowWild = c >= 1 && c <= 4;
-            const spawned = createCell(null, span, null, allowWild);
+            const spawned = createCell(null, span, null, allowWild, c <= 3 ? cascadePreferred : null);
             spawned.dropRows = missingRows;
             newCells.unshift(spawned);
             usedRows += span;
@@ -1206,7 +1267,7 @@
     });
   }
 
-  // Authentic Big Win / Mega Win / Super Mega Win / Total Win Celebration Modal
+  // Authentic Big Win / Mega Win / Super Mega Win / Total Win Celebration Modal with Tier Escalation
   function showCelebrationModal(tier, amount) {
     return new Promise(resolve => {
       const spriteMap = {
@@ -1215,18 +1276,33 @@
         smw: 'smw_tight.png',
         tw: 'tw_tight.png'
       };
-      els.celebTitleImg.src = `${NEKO_DIR}${spriteMap[tier] || 'bw_tight.png'}`;
+      const currentBet = BET_OPTIONS[state.betIndex];
+      let activeTier = tier === 'tw' ? 'tw' : 'bw';
+      els.celebTitleImg.src = `${NEKO_DIR}${spriteMap[activeTier]}`;
       els.celebModal.classList.add('active');
       window.MahjongSound.startBigWinBgm(tier === 'tw');
 
       let current = 0;
-      const step = Math.max(1, Math.floor(amount / 30));
+      const step = Math.max(1, Math.floor(amount / 36));
       let finished = false;
+
+      const updateTierSprite = (val) => {
+        if (tier === 'tw') return;
+        let nextTier = 'bw';
+        if (val >= currentBet * 50) nextTier = 'smw';
+        else if (val >= currentBet * 30) nextTier = 'mw';
+        if (nextTier !== activeTier) {
+          activeTier = nextTier;
+          els.celebTitleImg.src = `${NEKO_DIR}${spriteMap[activeTier]}`;
+        }
+      };
 
       const finishRollup = () => {
         if (finished) return;
         finished = true;
         clearInterval(timer);
+        updateTierSprite(amount);
+        els.celebTitleImg.src = `${NEKO_DIR}${spriteMap[tier] || 'bw_tight.png'}`;
         els.celebAmountSprites.innerHTML = window.NekoTiles.renderCelebrationNumberSprites(amount, tier === 'tw' ? 'tw' : 'bw');
         els.celebAmount.textContent = formatIDR(amount);
       };
@@ -1248,6 +1324,7 @@
 
       const timer = setInterval(() => {
         current = Math.min(amount, current + step);
+        updateTierSprite(current);
         els.celebAmountSprites.innerHTML = window.NekoTiles.renderCelebrationNumberSprites(current, tier === 'tw' ? 'tw' : 'bw');
         els.celebAmount.textContent = formatIDR(current);
         window.MahjongSound.playCoinTick();

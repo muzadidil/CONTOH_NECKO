@@ -1,5 +1,5 @@
-// Official Offline-First PWA Service Worker for PG Soft Lucky Neko
-const CACHE_NAME = 'pgsoft-lucky-neko-v2';
+// Official Network-First PWA Service Worker for PG Soft Lucky Neko
+const CACHE_NAME = 'pgsoft-lucky-neko-v5';
 
 const NEKO_SYMBOLS = [
   'h_neko.png', 'h_neko_blur.png', 's_wild.png', 's_wild_blur.png',
@@ -65,25 +65,25 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
+  // Network-first strategy so code & CSS updates always take effect immediately
   event.respondWith(
-    caches.match(event.request).then(cachedResp => {
-      if (cachedResp) {
-        return cachedResp;
-      }
-      return fetch(event.request).then(networkResp => {
-        if (!networkResp || networkResp.status !== 200 || networkResp.type !== 'basic') {
-          return networkResp;
+    fetch(event.request)
+      .then(networkResp => {
+        if (networkResp && networkResp.status === 200 && networkResp.type === 'basic') {
+          const respToCache = networkResp.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, respToCache);
+          });
         }
-        const respToCache = networkResp.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, respToCache);
-        });
         return networkResp;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
+      })
+      .catch(() => {
+        return caches.match(event.request).then(cachedResp => {
+          if (cachedResp) return cachedResp;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });
