@@ -2,6 +2,7 @@
 // 1:1 Sliced Native Sprites from PG Soft Lucky Neko Texture Atlases (assets/sprites/neko/)
 (function () {
   const NEKO_DIR = 'assets/sprites/neko/';
+  const _preloadedImages = [];
 
   // Authentic PG Soft Lucky Neko Paytable & Sprite Mapping (from Cocos Creator scene_tree.json)
   const SYMBOLS = {
@@ -81,7 +82,7 @@
       blockPrefix: 'l_block',
       blockColor: 'orange',
       glyphBase: 'l_a',
-       isLow: true,
+      isLow: true,
       pays: { 3: 4, 4: 6, 5: 8, 6: 10 }
     },
     card_k: {
@@ -152,6 +153,33 @@
     return `${NEKO_DIR}s_${frameType}_frame_${k}${blurSfx}`;
   }
 
+  // Preload all normal and motion-blurred tile sprites so spin strips render instantaneously
+  function preloadTileSprites() {
+    const urls = new Set();
+    Object.values(SYMBOLS).forEach(sym => {
+      [false, true].forEach(blur => {
+        [1, 2, 3, 4].forEach(span => {
+          urls.add(getGlyphFile(sym, span, blur));
+          const blk = getBlockFile(sym, span, blur);
+          if (blk) urls.add(blk);
+        });
+      });
+    });
+    ['silver', 'gold'].forEach(ft => {
+      [false, true].forEach(blur => {
+        [1, 2, 3, 4].forEach(span => {
+          urls.add(getFrameFile(ft, span, blur));
+        });
+      });
+    });
+    urls.forEach(u => {
+      if (!u) return;
+      const img = new Image();
+      img.src = u;
+      _preloadedImages.push(img);
+    });
+  }
+
   // Render authentic layered PG Soft Lucky Neko tile (background block + glyph + silver/gold border + x2 badge)
   function renderTileHTML(cellData, isBlurred = false) {
     if (!cellData) return '';
@@ -193,8 +221,8 @@
     if (sym.hasCatMult && !isBlurred) {
       catMultHTML = `
         <div class="neko-cat-mult-badge">
-          <img class="mult-x-ic" src="${NEKO_DIR}multiplier_x.png" alt="x" draggable="false" />
-          <img class="mult-2-ic" src="${NEKO_DIR}multiplier_2.png" alt="2" draggable="false" />
+          <img class="mult-x-ic" src="${NEKO_DIR}multiplier_x_tight.png" alt="x" draggable="false" />
+          <img class="mult-2-ic" src="${NEKO_DIR}multiplier_2_tight.png" alt="2" draggable="false" />
         </div>`;
     }
 
@@ -215,7 +243,7 @@
     let html = '<div class="ways-digits-group">';
     for (const ch of str) {
       if (ch >= '0' && ch <= '9') {
-        html += `<img class="ways-digit-sp" src="${NEKO_DIR}ways_${ch}.png" alt="${ch}" draggable="false" />`;
+        html += `<img class="ways-digit-sp" src="${NEKO_DIR}ways_${ch}_tight.png" alt="${ch}" draggable="false" />`;
       }
     }
     html += '</div>';
@@ -223,13 +251,15 @@
     return html;
   }
 
-  // Render Cat Multiplier (x2, x4, x6...) using multiplier_x.png + multiplier_0..9.png
+  // Render Cat Multiplier (x2, x4, x6...) using multiplier_x_tight.png + multiplier_0..9_tight.png
   function renderMultiplierSprites(multValue) {
-    const str = String(Math.max(2, Math.floor(multValue)));
-    let html = `<img class="shrine-mult-x" src="${NEKO_DIR}multiplier_x.png" alt="x" draggable="false" />`;
+    const val = Math.floor(multValue);
+    if (val < 2) return '';
+    const str = String(val);
+    let html = `<img class="shrine-mult-x" src="${NEKO_DIR}multiplier_x_tight.png" alt="x" draggable="false" />`;
     for (const ch of str) {
       if (ch >= '0' && ch <= '9') {
-        html += `<img class="shrine-mult-digit" src="${NEKO_DIR}multiplier_${ch}.png" alt="${ch}" draggable="false" />`;
+        html += `<img class="shrine-mult-digit" src="${NEKO_DIR}multiplier_${ch}_tight.png" alt="${ch}" draggable="false" />`;
       }
     }
     return html;
@@ -241,11 +271,11 @@
     let html = '<span class="info-curr-rp">Rp</span>';
     for (const ch of formatted) {
       if (ch >= '0' && ch <= '9') {
-        html += `<img class="info-num-sp" src="${NEKO_DIR}info_num_${ch}.png" alt="${ch}" draggable="false" />`;
+        html += `<img class="info-num-sp" src="${NEKO_DIR}info_num_${ch}_tight.png" alt="${ch}" draggable="false" />`;
       } else if (ch === '.') {
-        html += `<img class="info-sep-sp dot" src="${NEKO_DIR}info_full_stop.png" alt="." draggable="false" />`;
+        html += `<img class="info-sep-sp dot" src="${NEKO_DIR}info_full_stop_tight.png" alt="." draggable="false" />`;
       } else if (ch === ',') {
-        html += `<img class="info-sep-sp comma" src="${NEKO_DIR}info_comma.png" alt="," draggable="false" />`;
+        html += `<img class="info-sep-sp comma" src="${NEKO_DIR}info_comma_tight.png" alt="," draggable="false" />`;
       }
     }
     return html;
@@ -258,7 +288,7 @@
       let html = '';
       for (const ch of str) {
         if (ch >= '0' && ch <= '9') {
-          html += `<img class="tw-digit-sp fs-count-sp" src="${NEKO_DIR}tw_${ch}.png" alt="${ch}" draggable="false" />`;
+          html += `<img class="tw-digit-sp fs-count-sp" src="${NEKO_DIR}tw_${ch}_tight.png" alt="${ch}" draggable="false" />`;
         }
       }
       return html;
@@ -269,19 +299,25 @@
     let html = '';
     for (const ch of formatted) {
       if (ch >= '0' && ch <= '9') {
-        html += `<img class="${prefix}-digit-sp" src="${NEKO_DIR}${prefix}_${ch}.png" alt="${ch}" draggable="false" />`;
+        html += `<img class="${prefix}-digit-sp" src="${NEKO_DIR}${prefix}_${ch}_tight.png" alt="${ch}" draggable="false" />`;
       } else if (ch === '.') {
-        html += `<img class="bw-sep-sp dot" src="${NEKO_DIR}bw_fuu_stop.png" alt="." draggable="false" />`;
+        html += `<img class="bw-sep-sp dot" src="${NEKO_DIR}bw_fuu_stop_tight.png" alt="." draggable="false" />`;
       } else if (ch === ',') {
-        html += `<img class="bw-sep-sp comma" src="${NEKO_DIR}bw_comma.png" alt="," draggable="false" />`;
+        html += `<img class="bw-sep-sp comma" src="${NEKO_DIR}bw_comma_tight.png" alt="," draggable="false" />`;
       }
     }
     return html;
   }
 
+  preloadTileSprites();
+
   window.NekoTiles = {
     NEKO_DIR,
     SYMBOLS,
+    getGlyphFile,
+    getBlockFile,
+    getFrameFile,
+    preloadTileSprites,
     renderTileHTML,
     renderWaysSprites,
     renderMultiplierSprites,

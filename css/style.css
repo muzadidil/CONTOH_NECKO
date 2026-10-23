@@ -1,6 +1,6 @@
 /* ==========================================================================
    PG SOFT — LUCKY NEKO (GAME ID 89) AUTHENTIC 1:1 STYLESHEET
-   Uses 100% Genuine Sliced PG Soft Lucky Neko Texture Atlas Sprites
+   100% Exact Cocos Creator 1080x2340 (9:19.5) Scene Coordinates & Native Sprites
    ========================================================================== */
 
 *, *::before, *::after {
@@ -148,7 +148,7 @@ html, body {
 }
 
 /* ==========================================
-   APP BACKDROP & 9:16 PORTRAIT GAME SHELL
+   APP BACKDROP & 1080x2340 (9:19.5) PORTRAIT SHELL
    ========================================== */
 .app-backdrop {
   position: fixed;
@@ -164,9 +164,9 @@ html, body {
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: calc(100vh * 9 / 16);
+  max-width: 440px;
   max-height: 100vh;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 9 / 19.5;
   background: #2b1318;
   overflow: hidden;
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
@@ -174,7 +174,7 @@ html, body {
   flex-direction: column;
 }
 
-@media (max-aspect-ratio: 9/16) {
+@media (max-aspect-ratio: 9/19.5) {
   .lucky-neko-shell {
     max-width: 100vw;
     max-height: 100vh;
@@ -211,7 +211,7 @@ html, body {
   z-index: 1;
 }
 
-/* Glossy Pink MULAI Button (Matches live_25s.png 1:1) */
+/* Glossy Pink MULAI Button */
 .splash-center-cta {
   position: absolute;
   top: 75.3%;
@@ -245,7 +245,7 @@ html, body {
   transform: scale(0.96);
 }
 
-/* Pink Striped Loading Bar (Matches live_6s.png 1:1) */
+/* Pink Striped Loading Bar */
 .splash-progress-container {
   position: absolute;
   top: 74.3%;
@@ -322,44 +322,48 @@ html, body {
 
 /* ==========================================
    2. TOP TEMPLE ROOF, SAKURA TREES, WAYS BAR & 4-CELL TOP REEL
-   (0% to 15.8% of 9:16 Game Shell)
+   Exact Cocos Creator 1080x2340 Coords:
+   - ui_top_bg: top -0.26%, height 22.92% (bottom at 22.66%)
+   - way_win_bar: top 11.10%, height 4.03%, width 42.50%
+   - ui_reel_top_01: top 15.11%, height 6.78%, left 16.68%, width 66.27%
+   - horizontal_slot_holder: top 15.60%, height 6.41%, left 17.22%, width 65.55%
    ========================================== */
 .neko-top-section {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 15.8%;
+  height: 22.66%;
   z-index: 20;
   pointer-events: none;
 }
 
 .temple-roof-bg {
   position: absolute;
-  top: -66%;
+  top: -1.15%;
   left: 0;
   width: 100%;
-  height: 168%;
+  height: 101.15%;
   object-fit: fill;
   z-index: 1;
 }
 
 .sakura-tree {
   position: absolute;
-  top: -12%;
-  width: 31%;
+  top: -3.4%;
+  width: 32.7%;
   height: auto;
   z-index: 4;
   pointer-events: none;
   animation: treeSway 5s ease-in-out infinite alternate;
 }
 .sakura-tree.tree-left {
-  left: -3%;
+  left: -0.5%;
   transform-origin: top left;
 }
 .sakura-tree.tree-right {
-  right: -3%;
-  width: 29%;
+  right: -1.3%;
+  width: 30.3%;
   transform-origin: top right;
 }
 @keyframes treeSway {
@@ -373,7 +377,7 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 350%;
+  height: 300%;
   overflow: hidden;
   z-index: 15;
   pointer-events: none;
@@ -455,14 +459,14 @@ html, body {
   background: rgba(233, 62, 123, 0.45);
 }
 
-/* Ways Plaque (10800 CARA) */
+/* Ways Plaque (10800 CARA) — Aligned 1:1 with painted plaque on ui_top_bg */
 .ways-plaque-holder {
   position: absolute;
-  top: 15.5%;
+  top: 49.0%;
   left: 50%;
   transform: translateX(-50%);
-  width: 43%;
-  height: 29.5%;
+  width: 42.5%;
+  height: 17.8%;
   z-index: 6;
   display: flex;
   align-items: center;
@@ -481,8 +485,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  height: 62%;
+  gap: 5px;
+  height: 58%;
   padding: 0 8px;
 }
 .ways-digits-group {
@@ -492,41 +496,40 @@ html, body {
   height: 100%;
 }
 .ways-digit-sp {
-  height: 78%;
+  height: 86%;
   width: auto;
   object-fit: contain;
 }
 .ways-cara-sp {
-  height: 76%;
+  height: 82%;
   width: auto;
   object-fit: contain;
   margin-left: 3px;
 }
 
-/* 4-Cell Top Horizontal Reel (Above Columns 2, 3, 4, 5) */
+/* 4-Cell Top Horizontal Reel — Sits 100% inside transparent cutout of ui_top_bg & aligns with Cols 1-4 */
 .top-horizontal-reel-wrapper {
   position: absolute;
-  bottom: 0%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 66.4%;
-  height: 51.5%;
+  top: 67.2%;
+  left: calc(0.83% + 98.33% * 1 / 6);
+  width: calc(98.33% * 4 / 6);
+  height: 29.8%;
   z-index: 5;
   pointer-events: auto;
 }
 .top-reel-backplate {
   position: absolute;
-  inset: 2% 1%;
-  width: 98%;
-  height: 96%;
+  inset: -2px -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 4px);
   object-fit: fill;
   z-index: 1;
 }
 .top-reel-mask {
   position: absolute;
-  inset: 4% 1.4%;
-  width: 97.2%;
-  height: 92%;
+  inset: 2px 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 4px);
   overflow: hidden;
   z-index: 2;
 }
@@ -536,27 +539,40 @@ html, body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
-  transition: transform 0.18s ease-out;
+  will-change: transform;
 }
+/* Continuous Right-to-Left Strip Spin for Top Horizontal Reel */
 .top-reel-board.top-spinning {
-  animation: topHorizontalScroll 0.16s linear infinite;
+  width: 200%;
+  grid-template-columns: repeat(8, 1fr);
+  animation: topHorizontalStripScroll 0.18s linear infinite;
 }
-@keyframes topHorizontalScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-25%); }
+@keyframes topHorizontalStripScroll {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
+.top-reel-board.top-landing {
+  animation: topReelBounce 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes topReelBounce {
+  0% { transform: translate3d(14px, 0, 0); }
+  55% { transform: translate3d(-5px, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
 .top-cell-slot {
   position: relative;
   width: 100%;
   height: 100%;
   overflow: visible;
   cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 .top-reel-frame {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -3px -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 6px);
   object-fit: fill;
   z-index: 4;
   pointer-events: none;
@@ -564,30 +580,34 @@ html, body {
 
 /* ==========================================
    3. MAIN 6-COLUMN X 5-ROW REEL BOARD
-   (15.8% to 55.2% of 9:16 Game Shell)
+   Exact Cocos Creator 1080x2340 Coords:
+   - ui_reel_mid_01: top 21.25%, height 33.58% (bottom at 54.83%)
+   - ui_reel_mid_02: left 0.48%, width 99.04%, top 2.8%, height 94.1%
+   - slot_holder (6x5): left 0.83%, width 98.33%, top 2.9%, height 94.16%
    ========================================== */
 .main-reel-section {
   position: absolute;
-  top: 15.8%;
+  top: 21.25%;
   left: 0;
   width: 100%;
-  height: 39.4%;
+  height: 33.58%;
   z-index: 15;
 }
 .main-reel-backplate {
   position: absolute;
-  inset: 1.5% 0.6%;
-  width: 98.8%;
-  height: 97%;
+  top: 2.8%;
+  left: 0.48%;
+  width: 99.04%;
+  height: 94.1%;
   object-fit: fill;
   z-index: 1;
 }
 .main-reel-mask {
   position: absolute;
-  top: 2.3%;
-  left: 1.1%;
-  width: 97.8%;
-  height: 95.4%;
+  top: 2.9%;
+  left: 0.83%;
+  width: 98.33%;
+  height: 94.16%;
   overflow: hidden;
   z-index: 2;
 }
@@ -609,13 +629,45 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  will-change: transform;
 }
+/* Continuous Top-to-Bottom Motion-Blurred Strip Scroll during Spin */
 .neko-reel-col.reel-spinning .neko-reel-track {
-  animation: mainReelScroll 0.15s linear infinite;
+  height: 200%;
+  animation: mainReelStripScroll 0.16s linear infinite;
 }
-@keyframes mainReelScroll {
-  0% { transform: translateY(-12%); }
-  100% { transform: translateY(12%); }
+@keyframes mainReelStripScroll {
+  0% { transform: translate3d(0, -50%, 0); }
+  100% { transform: translate3d(0, 0%, 0); }
+}
+
+/* Elastic Column Stop Bounce (Authentic Cocos Reel Stop) */
+.neko-reel-col.column-landing .neko-reel-track {
+  animation: columnStopBounce 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes columnStopBounce {
+  0% { transform: translate3d(0, -16px, 0); }
+  55% { transform: translate3d(0, 7px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* 3-Scatter Slowdrop Fiery Anticipation Glow */
+.neko-reel-col.col-slowdrop-anticipation {
+  box-shadow: inset 0 0 18px rgba(255, 193, 7, 0.85), 0 0 16px rgba(255, 152, 0, 0.8);
+  z-index: 8;
+}
+.neko-reel-col.col-slowdrop-anticipation::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid #ffd54f;
+  background: linear-gradient(180deg, rgba(255, 193, 7, 0.22) 0%, rgba(255, 87, 34, 0.08) 50%, rgba(255, 193, 7, 0.22) 100%);
+  pointer-events: none;
+  animation: slowdropPulse 0.3s ease-in-out infinite alternate;
+}
+@keyframes slowdropPulse {
+  0% { opacity: 0.55; }
+  100% { opacity: 1; }
 }
 
 /* Individual Cell Slot (Supports 1x1, 1x2, 1x3, 1x4 Multi-Row Spans) */
@@ -626,11 +678,31 @@ html, body {
   flex: 1 0 20%;
   overflow: visible;
   cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 .neko-cell-slot.span-1 { height: 20%; flex: 1 0 20%; }
 .neko-cell-slot.span-2 { height: 40%; flex: 2 0 40%; }
 .neko-cell-slot.span-3 { height: 60%; flex: 3 0 60%; }
 .neko-cell-slot.span-4 { height: 80%; flex: 4 0 80%; }
+
+/* Per-Cell Cascade Gravity Drop Animation */
+.neko-cell-slot.cell-cascade-drop {
+  animation: cascadeGravityDrop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes cascadeGravityDrop {
+  0% { transform: translate3d(0, -95%, 0); opacity: 0.35; }
+  70% { transform: translate3d(0, 6%, 0); opacity: 1; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+
+.top-cell-slot.cell-cascade-slide {
+  animation: cascadeHorizontalSlide 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes cascadeHorizontalSlide {
+  0% { transform: translate3d(85%, 0, 0); opacity: 0.4; }
+  70% { transform: translate3d(-5%, 0, 0); opacity: 1; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
+}
 
 .main-reel-frame {
   position: absolute;
@@ -643,7 +715,7 @@ html, body {
 }
 
 /* ==========================================
-   AUTHENTIC LAYERED TILE RENDERING
+   AUTHENTIC LAYERED TILE RENDERING & VFX
    ========================================== */
 .neko-tile {
   position: relative;
@@ -722,7 +794,7 @@ html, body {
 /* Lucky Neko Cat x2 Multiplier Badge on Tile */
 .neko-cat-mult-badge {
   position: absolute;
-  bottom: 3%;
+  bottom: 2%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -731,7 +803,7 @@ html, body {
   justify-content: center;
   height: 22px;
   pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.75));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 .neko-cat-mult-badge .mult-x-ic {
   height: 15px;
@@ -743,33 +815,122 @@ html, body {
   width: auto;
 }
 
-/* Winning & Cat Bounce Animations */
+/* Authentic Cocos black_tinter Board Dimming on Non-Winning Tiles */
+.board-has-win .neko-cell-slot:not(.winning-cell),
+.board-has-win .top-cell-slot:not(.winning-cell) {
+  filter: brightness(0.42) saturate(0.85);
+}
+
+/* Winning Tile Highlight (Matches win_payout_effect_player) */
+.winning-cell {
+  z-index: 12 !important;
+}
 .winning-cell .neko-tile {
-  animation: winTilePulse 0.36s ease-in-out infinite alternate;
-  z-index: 10;
+  animation: winTilePulse 0.34s ease-in-out infinite alternate;
+  z-index: 12;
+}
+.winning-cell .neko-tile::before {
+  content: "";
+  position: absolute;
+  inset: -6%;
+  background: radial-gradient(circle, rgba(255, 238, 88, 0.55) 0%, rgba(255, 152, 0, 0.2) 55%, transparent 75%);
+  z-index: 0;
+  pointer-events: none;
 }
 .winning-cell .neko-tile::after {
   content: "";
   position: absolute;
   inset: 0;
   border: 2.5px solid #fff59d;
-  box-shadow: 0 0 16px #ffd54f, inset 0 0 12px rgba(255, 235, 59, 0.65);
+  box-shadow: 0 0 16px #ffd54f, inset 0 0 12px rgba(255, 235, 59, 0.75);
   z-index: 6;
   pointer-events: none;
 }
 @keyframes winTilePulse {
-  0% { transform: scale(1); filter: brightness(1.05); }
-  100% { transform: scale(1.07); filter: brightness(1.3); }
+  0% { transform: scale(1); filter: brightness(1.06); }
+  100% { transform: scale(1.08); filter: brightness(1.32); }
 }
 
+/* Silver-to-Gold Roulette Rolling Animation */
+.tile-roulette-rolling .neko-glyph {
+  animation: rouletteGlyphSpin 0.09s linear infinite;
+}
+@keyframes rouletteGlyphSpin {
+  0% { transform: translateY(-35%) scaleY(1.15); filter: blur(1.5px) brightness(1.3); }
+  50% { transform: translateY(0%) scaleY(1.0); filter: blur(0.5px) brightness(1.5); }
+  100% { transform: translateY(35%) scaleY(1.15); filter: blur(1.5px) brightness(1.3); }
+}
+
+/* Gold-to-Wild & Silver-to-Gold Morph Flash */
+.tile-morph-wild .neko-tile {
+  animation: morphWildFlash 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes morphWildFlash {
+  0% { transform: scale(0.88); filter: brightness(2.2) drop-shadow(0 0 18px #ffd54f); }
+  60% { transform: scale(1.14); filter: brightness(1.6) drop-shadow(0 0 14px #ffab00); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Normal Winning Tile Shatter / Shrink (symShrink) */
+.tile-shattering .neko-tile {
+  animation: tileShrinkOut 0.24s cubic-bezier(0.55, 0.08, 0.68, 0.53) forwards;
+}
+@keyframes tileShrinkOut {
+  0% { transform: scale(1.05); opacity: 1; filter: brightness(1.6); }
+  100% { transform: scale(0.15); opacity: 0; filter: brightness(2.2); }
+}
+
+/* Cat Symbol Bounce when spawning x2 Multiplier */
 .cat-bounce .neko-tile {
-  animation: catBoostBounce 0.55s cubic-bezier(0.28, 0.84, 0.42, 1);
-  z-index: 12;
+  animation: catBoostBounce 0.52s cubic-bezier(0.28, 0.84, 0.42, 1);
+  z-index: 14;
 }
 @keyframes catBoostBounce {
   0% { transform: scale(1); }
-  45% { transform: scale(1.22); filter: brightness(1.35) drop-shadow(0 0 14px #ffd54f); }
+  45% { transform: scale(1.22); filter: brightness(1.38) drop-shadow(0 0 16px #ffd54f); }
   100% { transform: scale(1); }
+}
+
+/* Flying x2 Cat Multiplier Layer (fly_multiplier_controller) */
+.fly-multiplier-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 120;
+  pointer-events: none;
+  overflow: hidden;
+}
+.flying-cat-mult {
+  position: absolute;
+  width: 64px;
+  height: 44px;
+  margin-left: -32px;
+  margin-top: -22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 12px #ffd54f) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85));
+  will-change: transform, left, top, opacity;
+  transition: left 0.36s cubic-bezier(0.22, 0.8, 0.36, 1),
+              top 0.36s cubic-bezier(0.32, 0.08, 0.68, 0.98),
+              transform 0.36s ease-out;
+}
+.flying-cat-mult::before {
+  content: "";
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 241, 118, 0.85) 0%, rgba(255, 179, 0, 0.35) 45%, transparent 72%);
+  z-index: -1;
+}
+.flying-cat-mult .fly-x {
+  height: 28px;
+  width: auto;
+  margin-right: -3px;
+}
+.flying-cat-mult .fly-2 {
+  height: 36px;
+  width: auto;
 }
 
 /* Symbol Tap Payout Inspection Popup */
@@ -819,15 +980,20 @@ html, body {
 
 /* ==========================================
    4. SHRINE MID-SECTION: ROPE, INFOBOARD, CAT MULTIPLIER & BELI FITUR
-   (55.2% to 76.5% of 9:16 Game Shell)
+   Exact Cocos Creator 1080x2340 Coords:
+   - ui_btm_bg: top 54.67%, height 18.66% (bottom at 73.33%)
+   - infoboard_board_a: top 0% of shrine (54.67% of shell), height 32.4% (6.04% of shell)
+   - ui_mid_ui_03 (Shimenawa rope): top 9.8% of shrine, height 28.1% (behind infoboard)
+   - shide_1..6: top 25.3%..32.8% of shrine, height 48.8% (behind rope & infoboard)
+   - multiplier_holder: centered at cy=-395 (68% down shrine)
    ========================================== */
 .shrine-mid-section {
   position: absolute;
-  top: 55.2%;
+  top: 54.67%;
   left: 0;
   width: 100%;
-  height: 21.3%;
-  z-index: 12;
+  height: 18.66%;
+  z-index: 14;
   overflow: visible;
 }
 
@@ -850,77 +1016,83 @@ html, body {
   pointer-events: none;
 }
 
-/* Hanging Red Lanterns in Free Spins */
+/* Hanging Red Lanterns in Free Spins (Exact Cocos (-437,-202) and (434,-204)) */
 .shrine-lantern {
   position: absolute;
-  top: -4%;
-  width: 14%;
+  top: 14%;
+  width: 15.6%;
   height: auto;
   z-index: 5;
   pointer-events: none;
+  transform-origin: top center;
   animation: lanternSwing 3.2s ease-in-out infinite alternate;
 }
 .shrine-lantern.lantern-left {
-  left: 2%;
+  left: 1.7%;
   transform: scaleX(-1);
 }
 .shrine-lantern.lantern-right {
-  right: 2%;
+  right: 2.0%;
 }
 @keyframes lanternSwing {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(4px); }
+  0% { transform: translateY(0) rotate(-1.5deg); }
+  100% { transform: translateY(4px) rotate(1.5deg); }
 }
 
-/* 6 White Paper Shide Streamers (Matches after_mulai_1.png & scene_tree.json) */
+/* 6 White Paper Shide Streamers — Exact Cocos Creator Anchor Positions */
 .shide-streamer {
   position: absolute;
-  width: 6.8%;
-  height: auto;
-  z-index: 4;
+  width: 7.14%;
+  height: 48.8%;
+  object-fit: fill;
+  z-index: 3;
   pointer-events: none;
   transform-origin: top center;
   animation: shideSway 2.8s ease-in-out infinite alternate;
 }
-.shide-streamer.s1 { left: 3.2%; top: 4%; }
-.shide-streamer.s2 { left: 20.2%; top: 10%; animation-delay: 0.3s; }
-.shide-streamer.s3 { left: 37.0%; top: 13%; animation-delay: 0.6s; }
-.shide-streamer.s4 { right: 37.0%; top: 13%; animation-delay: 0.2s; }
-.shide-streamer.s5 { right: 20.2%; top: 10%; animation-delay: 0.5s; }
-.shide-streamer.s6 { right: 3.2%; top: 4%; animation-delay: 0.8s; }
+.shide-streamer.s1 { left: 2.78%;  top: 25.3%; }
+.shide-streamer.s2 { left: 19.97%; top: 30.2%; animation-delay: 0.3s; }
+.shide-streamer.s3 { left: 36.77%; top: 32.8%; animation-delay: 0.6s; }
+.shide-streamer.s4 { left: 56.08%; top: 32.8%; animation-delay: 0.2s; }
+.shide-streamer.s5 { left: 72.88%; top: 30.2%; animation-delay: 0.5s; }
+.shide-streamer.s6 { left: 90.08%; top: 25.3%; animation-delay: 0.8s; }
 @keyframes shideSway {
-  0% { transform: rotate(-2deg); }
+  0% { transform: rotate(-2.2deg); }
   100% { transform: rotate(2.5deg); }
 }
 
-/* Shimenawa Twisted Rope Across Bottom of Reels */
+/* Shimenawa Twisted Rope (Behind Infoboard so rope ends curve out left & right) */
 .shimenawa-rope-top {
   position: absolute;
-  top: -7%;
+  top: 9.8%;
   left: 0;
   width: 100%;
-  height: 36%;
+  height: 28.1%;
   object-fit: fill;
-  z-index: 6;
+  z-index: 4;
   pointer-events: none;
 }
 
-/* Infoboard Wooden Marquee Banner */
+/* Infoboard Wooden Marquee Banner (cy = -180 -> top 0% of shrine-mid-section) */
 .infoboard-holder {
   position: absolute;
-  top: 6%;
+  top: 0%;
   left: 50%;
   transform: translateX(-50%);
-  width: 76%;
-  height: 36%;
+  width: 75.8%;
+  height: 32.4%;
   z-index: 8;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: width 0.2s ease, transform 0.2s ease;
 }
 .infoboard-holder.win-mode {
-  width: 84%;
+  width: 82.4%;
+}
+.infoboard-holder.total-win-mode {
+  width: 87.4%;
 }
 .ib-bar-bg {
   position: absolute;
@@ -1011,13 +1183,13 @@ html, body {
   margin-bottom: 1px;
 }
 
-/* Shrine Lower Bar: Cat Multiplier Plaque & BELI FITUR Button */
+/* Shrine Lower Bar: Cat Multiplier Display (cy = -395) & BELI FITUR Button */
 .shrine-lower-bar {
   position: absolute;
-  bottom: 2%;
+  top: 41%;
   left: 0;
   width: 100%;
-  height: 56%;
+  height: 54%;
   z-index: 9;
   display: flex;
   align-items: center;
@@ -1025,59 +1197,82 @@ html, body {
   pointer-events: none;
 }
 
-/* Cat Multiplier Shrine Display */
+/* Authentic multiplier_controller Display (Giant Golden x2, x4, x6 in Shrine Spotlight / Torii Gate) */
 .shrine-cat-multiplier {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   padding: 4px 12px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(62, 18, 12, 0.85) 0%, rgba(28, 7, 5, 0.92) 100%);
-  border: 1.5px solid rgba(255, 202, 40, 0.65);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
   opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: scale(0.5);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 14px rgba(255, 213, 79, 0.55));
 }
 .shrine-cat-multiplier.active,
 .lucky-neko-shell.free-spin-active .shrine-cat-multiplier {
   opacity: 1;
   transform: scale(1);
 }
+.shrine-cat-multiplier::before {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 238, 88, 0.75) 0%, rgba(255, 160, 0, 0.28) 45%, transparent 70%);
+  opacity: 0;
+  transform: scale(0.4);
+  z-index: -1;
+  pointer-events: none;
+}
 .shrine-cat-multiplier.glowing {
-  animation: shrineMultPulse 0.45s ease 2;
-  box-shadow: 0 0 22px #ffd54f;
+  animation: shrineMultPulse 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.shrine-cat-multiplier.glowing::before {
+  animation: shrineMultShockwave 0.48s ease-out;
 }
 @keyframes shrineMultPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.25); }
+  0% { transform: scale(1); }
+  45% { transform: scale(1.38); filter: brightness(1.4) drop-shadow(0 0 22px #ffd54f); }
+  100% { transform: scale(1); }
 }
+@keyframes shrineMultShockwave {
+  0% { opacity: 1; transform: scale(0.4); }
+  100% { opacity: 0; transform: scale(1.65); }
+}
+/* Hide legacy small cat icon so only the authentic giant PG Soft multiplier_x + multiplier_0..9 shows */
 .shrine-cat-ic {
-  height: 34px;
-  width: auto;
-  object-fit: contain;
+  display: none !important;
 }
 .shrine-cat-mult-sprites {
   display: flex;
-  align-items: center;
-  height: 28px;
+  align-items: baseline;
+  justify-content: center;
+  height: 42px;
 }
 .shrine-mult-x {
-  height: 20px;
+  height: 33px;
   width: auto;
+  margin-right: -2px;
+  object-fit: contain;
 }
 .shrine-mult-digit {
-  height: 26px;
+  height: 42px;
   width: auto;
+  margin-left: -1px;
+  object-fit: contain;
 }
 
 /* Authentic BELI FITUR Signboard Button (Right Side) */
 .feature-buy-btn {
   position: absolute;
   right: 1.5%;
-  bottom: 4%;
-  width: 32%;
+  top: 52%;
+  transform: translateY(-50%);
+  width: 28.5%;
+  max-width: 122px;
   aspect-ratio: 363 / 159;
   border: none;
   background: transparent;
@@ -1095,7 +1290,7 @@ html, body {
   filter: brightness(1.08);
 }
 .feature-buy-btn:active {
-  transform: scale(0.95);
+  transform: translateY(-50%) scale(0.95);
 }
 .fb-btn-bg {
   position: absolute;
@@ -1115,14 +1310,19 @@ html, body {
 
 /* ==========================================
    5. BOTTOM WALLET BAR, WOODEN CONTROL PANEL & KOI POND FOOTER
-   (76.5% to 100% of 9:16 Game Shell)
+   Exact Cocos Creator 1080x2340 Coords:
+   - ui_footer: top 71.68%, height 28.32% (bottom at 100%)
+     - 0%..19.4% of ui_footer: Light beige wooden ledge (3 Wallet Pills)
+     - 21.6%..62.6% of ui_footer: Reddish-brown wooden control box (5 Spin/Control buttons)
+     - 64.8%..100% of ui_footer: Koi Pond water & lotus lilypads
    ========================================== */
 .game-footer {
   position: absolute;
+  top: 71.68%;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 23.5%;
+  height: 28.32%;
   z-index: 25;
 }
 
@@ -1135,47 +1335,68 @@ html, body {
   z-index: 1;
 }
 
-/* Koi Pond Lilypads at Very Bottom */
+/* Koi Pond Lilypads at Bottom 35% of ui_footer (Exact Cocos coordinates) */
 .koi-pond-decor {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 18%;
+  height: 34%;
   z-index: 2;
   pointer-events: none;
   overflow: hidden;
 }
 .pond-lily {
   position: absolute;
-  bottom: -6%;
-  height: 95%;
-  width: auto;
+  height: auto;
   object-fit: contain;
 }
-.pond-lily.lily-left { left: -2%; }
-.pond-lily.lily-center { left: 42%; height: 65%; bottom: 4%; }
-.pond-lily.lily-right { right: -2%; }
+.pond-lily.lily-left {
+  left: -1.5%;
+  bottom: 2%;
+  width: 33.8%;
+}
+.pond-lily.lily-center {
+  left: 36.5%;
+  bottom: 24%;
+  width: 31.3%;
+}
+.pond-lily.lily-mid-low {
+  left: 30.3%;
+  bottom: 0%;
+  width: 35.1%;
+}
+.pond-lily.lily-right {
+  right: -2.5%;
+  bottom: 0%;
+  width: 37.9%;
+}
 
-/* 3 Wallet Pills Row (Matches after_mulai_1.png 1:1) */
+/* 3 Wallet Pills Row — Sits inside top beige ledge (0%..19.4% of ui_footer) */
 .pg-wallet-pills-row {
   position: absolute;
-  top: 3.8%;
+  top: 3.2%;
   left: 1.5%;
   width: 97%;
-  height: 15.8%;
+  height: 13.5%;
+  max-height: 34px;
   z-index: 5;
   display: grid;
-  grid-template-columns: 1.42fr 0.76fr 1.42fr;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1.44fr) minmax(0, 0.94fr) minmax(0, 1.32fr);
+  grid-template-rows: 100%;
+  gap: 4px;
   align-items: center;
 }
 
 .pg-pill-meter {
   height: 100%;
-  background: rgba(20, 12, 10, 0.76);
+  max-height: 32px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: rgba(20, 12, 10, 0.78);
   border-radius: 999px;
-  padding: 0 10px;
+  padding: 0 7px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1184,32 +1405,33 @@ html, body {
 }
 .pg-pill-meter.pill-center {
   justify-content: center;
+  padding: 0 5px;
 }
 
 .wallet-user-ic-wrap {
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 19px;
+  height: 19px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 .wallet-user-ic {
-  width: 22px;
-  height: 22px;
+  width: 17px;
+  height: 17px;
   object-fit: contain;
 }
 .wallet-user-lines {
   position: absolute;
   top: 0px;
   right: -3px;
-  width: 9px;
+  width: 8px;
   height: auto;
 }
 
 .pill-value-text {
-  font-size: clamp(11px, 1.65vh, 14px);
+  font-size: clamp(10px, 1.4vh, 12.2px);
   font-weight: 700;
   color: #d89b48;
   white-space: nowrap;
@@ -1221,12 +1443,13 @@ html, body {
   margin-right: 4px;
 }
 .pill-right .pill-value-text {
-  margin-left: 6px;
+  margin-left: 4px;
   margin-right: auto;
 }
 
 .pg-shield-icon {
-  height: 60%;
+  height: 19px;
+  max-height: 64%;
   width: auto;
   object-fit: contain;
   opacity: 0.85;
@@ -1234,44 +1457,49 @@ html, body {
 .pill-win-box {
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  gap: 3px;
 }
 .pill-win-tag {
-  height: 15px;
+  height: 12px;
   width: auto;
   object-fit: contain;
+  flex-shrink: 0;
 }
 .pill-win-val {
-  font-size: clamp(10px, 1.5vh, 13px);
+  font-size: clamp(9.5px, 1.35vh, 12px);
   font-weight: 800;
   color: #ffca28;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .pill-icon-right {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   flex-shrink: 0;
 }
 
-/* 5 Control Buttons Row + Right Hamburger inside Wooden Box */
+/* 5 Control Buttons Row + Right Hamburger inside Wooden Box (21.6%..62.6% of ui_footer) */
 .pg-controls-row {
   position: absolute;
-  top: 25%;
+  top: 22.0%;
   left: 0;
   width: 100%;
-  height: 60%;
+  height: 39.5%;
   z-index: 6;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 5.5%;
+  justify-content: space-evenly;
   padding: 0 5%;
 }
 
 .pg-round-btn {
   position: relative;
-  width: 11.5%;
+  width: 11.2%;
   aspect-ratio: 1 / 1;
   border: none;
   background: transparent;
@@ -1323,18 +1551,18 @@ html, body {
   margin-left: 2px;
 }
 
-/* Center Lucky Neko Shimenawa Rope + Golden Bells Spin Button */
+/* Center Lucky Neko Shimenawa Rope + Golden Bells Spin Button (165x162 * 1.4286 = 21.8% width) */
 .neko-spin-btn {
   position: relative;
-  width: 22.5%;
-  aspect-ratio: 181 / 171;
+  width: 21.8%;
+  aspect-ratio: 165 / 162;
   border: none;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-top: -2%;
+  margin-top: -1%;
   transition: transform 0.1s ease;
 }
 .neko-spin-btn:active {
@@ -1349,8 +1577,8 @@ html, body {
 }
 .spin-arrow-img {
   position: absolute;
-  width: 68%;
-  height: 68%;
+  width: 72%;
+  height: 72%;
   object-fit: contain;
   z-index: 3;
   animation: idleSpinRotate 8s linear infinite;
@@ -1367,15 +1595,15 @@ html, body {
   100% { transform: rotate(-360deg); }
 }
 
-/* Hanging Twin Golden Bells under Spin Button */
+/* Hanging Twin Golden Bells (ling_long_holder) BEHIND Spin Button Ring (z-index: 1) */
 .spin-bells-holder {
   position: absolute;
-  bottom: -26%;
+  bottom: -24%;
   left: 50%;
   transform: translateX(-50%);
-  width: 48%;
-  height: 45%;
-  z-index: 4;
+  width: 54%;
+  height: 50%;
+  z-index: 1;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -1385,25 +1613,39 @@ html, body {
   width: auto;
   object-fit: contain;
   transform-origin: top center;
-  animation: bellJingle 2.2s ease-in-out infinite alternate;
 }
 .spin-bell.bell-left {
-  margin-right: -4px;
+  margin-right: -5px;
+  transform: rotate(11.25deg);
+  animation: bellJingleLeft 2.2s ease-in-out infinite alternate;
 }
 .spin-bell.bell-right {
-  margin-left: -4px;
+  margin-left: -5px;
+  transform: rotate(-11.25deg);
+  animation: bellJingleRight 2.2s ease-in-out infinite alternate;
   animation-delay: 0.25s;
 }
-.neko-spin-btn.spinning-state .spin-bell {
-  animation: bellJingleFast 0.22s ease-in-out infinite alternate;
+.neko-spin-btn.spinning-state .spin-bell.bell-left {
+  animation: bellJingleLeftFast 0.20s ease-in-out infinite alternate;
 }
-@keyframes bellJingle {
-  0% { transform: rotate(-4deg); }
-  100% { transform: rotate(4deg); }
+.neko-spin-btn.spinning-state .spin-bell.bell-right {
+  animation: bellJingleRightFast 0.20s ease-in-out infinite alternate;
 }
-@keyframes bellJingleFast {
-  0% { transform: rotate(-14deg); }
-  100% { transform: rotate(14deg); }
+@keyframes bellJingleLeft {
+  0% { transform: rotate(8deg); }
+  100% { transform: rotate(15deg); }
+}
+@keyframes bellJingleRight {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(-8deg); }
+}
+@keyframes bellJingleLeftFast {
+  0% { transform: rotate(2deg); }
+  100% { transform: rotate(22deg); }
+}
+@keyframes bellJingleRightFast {
+  0% { transform: rotate(-22deg); }
+  100% { transform: rotate(-2deg); }
 }
 
 /* Auto Spin Active Ring & Counter Badge */
@@ -1437,7 +1679,7 @@ html, body {
   border: none;
   background: transparent;
   cursor: pointer;
-  opacity: 0.8;
+  opacity: 0.85;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1450,10 +1692,10 @@ html, body {
 /* Free Spins Remaining Counter Overlay (Replaces Controls during Free Spins) */
 .free-spin-counter-bar {
   position: absolute;
-  top: 26%;
+  top: 22.0%;
   left: 0;
   width: 100%;
-  height: 58%;
+  height: 39.5%;
   z-index: 12;
   display: flex;
   align-items: center;
@@ -1485,7 +1727,7 @@ html, body {
 /* Slide-up Utility Menu Drawer */
 .pg-utility-drawer {
   position: absolute;
-  bottom: 76%;
+  bottom: 82%;
   left: 4%;
   width: 92%;
   background: rgba(22, 10, 16, 0.96);
@@ -1599,7 +1841,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.1s;
+  transition: transform 0.1s ease;
 }
 .fb-action-btn:active {
   transform: scale(0.95);
@@ -1609,18 +1851,18 @@ html, body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: contain;
 }
 .fb-act-txt {
   position: relative;
   z-index: 2;
-  max-width: 84%;
-  max-height: 58%;
+  width: 76%;
+  height: auto;
   object-fit: contain;
 }
 
 /* ==========================================
-   7. FREE SPINS BONUS INTRO SCREEN (fs_bg.jpg)
+   7. FREE SPINS BONUS INTRO MODAL (fs_bg.jpg)
    ========================================== */
 .fs-intro-modal {
   position: absolute;
@@ -1630,11 +1872,15 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 10% 6% 9%;
-  background: #1a0612;
+  padding: 12% 6% 10%;
 }
 .fs-intro-modal.active {
   display: flex;
+  animation: modalFadeIn 0.35s ease;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 .fs-intro-bg {
   position: absolute;
@@ -1645,65 +1891,69 @@ html, body {
   z-index: 1;
 }
 .fs-intro-cat {
-  position: absolute;
-  top: 24%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 88%;
+  position: relative;
+  z-index: 2;
+  width: 68%;
+  max-width: 260px;
   height: auto;
   object-fit: contain;
-  z-index: 2;
+  margin-top: 4%;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.7));
+  animation: floatCat 2.4s ease-in-out infinite alternate;
+}
+@keyframes floatCat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
 }
 .fs-intro-content {
   position: relative;
-  z-index: 4;
+  z-index: 3;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6%;
 }
 .fs-won-count {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 12%;
-  margin-top: 2%;
+  height: 64px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
 }
 .fs-won-count .tw-digit-sp {
   height: 100%;
   width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.7));
 }
 .fs-won-title {
-  width: 86%;
+  width: 82%;
+  max-width: 310px;
   height: auto;
   object-fit: contain;
-  margin-bottom: auto;
-  margin-top: 2%;
 }
 .fs-won-desc {
   width: 88%;
+  max-width: 330px;
   height: auto;
   object-fit: contain;
-  margin-bottom: 6%;
 }
 .fs-start-btn {
   position: relative;
   width: 56%;
-  aspect-ratio: 408 / 153;
+  max-width: 210px;
+  aspect-ratio: 264 / 100;
   border: none;
   background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.12s;
+  margin-top: 8px;
+  transition: transform 0.12s ease;
 }
 .fs-start-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 .fs-start-bg {
   position: absolute;
@@ -1715,7 +1965,7 @@ html, body {
 .fs-start-txt {
   position: relative;
   z-index: 2;
-  width: 44%;
+  width: 55%;
   height: auto;
   object-fit: contain;
 }
@@ -1726,16 +1976,17 @@ html, body {
 .celebration-modal {
   position: absolute;
   inset: 0;
-  z-index: 320;
+  z-index: 350;
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(18, 4, 10, 0.92);
+  padding: 20px;
   overflow: hidden;
 }
 .celebration-modal.active {
   display: flex;
+  animation: modalFadeIn 0.3s ease;
 }
 .celeb-bg-img {
   position: absolute;
@@ -1747,37 +1998,38 @@ html, body {
 }
 .celebration-rays {
   position: absolute;
-  width: 160%;
+  width: 180%;
   aspect-ratio: 1 / 1;
   background: conic-gradient(
     from 0deg,
-    transparent 0deg 15deg,
-    rgba(255, 215, 64, 0.22) 15deg 30deg,
-    transparent 30deg 45deg,
-    rgba(255, 215, 64, 0.22) 45deg 60deg,
-    transparent 60deg 75deg,
-    rgba(255, 215, 64, 0.22) 75deg 90deg,
-    transparent 90deg 105deg,
-    rgba(255, 215, 64, 0.22) 105deg 120deg,
-    transparent 120deg 135deg,
-    rgba(255, 215, 64, 0.22) 135deg 150deg,
-    transparent 150deg 165deg,
-    rgba(255, 215, 64, 0.22) 165deg 180deg,
-    transparent 180deg 195deg,
-    rgba(255, 215, 64, 0.22) 195deg 210deg,
-    transparent 210deg 225deg,
-    rgba(255, 215, 64, 0.22) 225deg 240deg,
-    transparent 240deg 255deg,
-    rgba(255, 215, 64, 0.22) 255deg 270deg,
-    transparent 270deg 285deg,
-    rgba(255, 215, 64, 0.22) 285deg 300deg,
-    transparent 300deg 315deg,
-    rgba(255, 215, 64, 0.22) 315deg 330deg,
-    transparent 330deg 345deg,
-    rgba(255, 215, 64, 0.22) 345deg 360deg
+    rgba(255, 215, 64, 0.22) 0deg 15deg,
+    transparent 15deg 30deg,
+    rgba(255, 215, 64, 0.22) 30deg 45deg,
+    transparent 45deg 60deg,
+    rgba(255, 215, 64, 0.22) 60deg 75deg,
+    transparent 75deg 90deg,
+    rgba(255, 215, 64, 0.22) 90deg 105deg,
+    transparent 105deg 120deg,
+    rgba(255, 215, 64, 0.22) 120deg 135deg,
+    transparent 135deg 150deg,
+    rgba(255, 215, 64, 0.22) 150deg 165deg,
+    transparent 165deg 180deg,
+    rgba(255, 215, 64, 0.22) 180deg 195deg,
+    transparent 195deg 210deg,
+    rgba(255, 215, 64, 0.22) 210deg 225deg,
+    transparent 225deg 240deg,
+    rgba(255, 215, 64, 0.22) 240deg 255deg,
+    transparent 255deg 270deg,
+    rgba(255, 215, 64, 0.22) 270deg 285deg,
+    transparent 285deg 300deg,
+    rgba(255, 215, 64, 0.22) 300deg 315deg,
+    transparent 315deg 330deg,
+    rgba(255, 215, 64, 0.22) 330deg 345deg,
+    transparent 345deg 360deg
   );
-  animation: spinRays 14s linear infinite;
   z-index: 2;
+  animation: spinRays 14s linear infinite;
+  pointer-events: none;
 }
 @keyframes spinRays {
   to { transform: rotate(360deg); }
@@ -1785,42 +2037,45 @@ html, body {
 .celeb-cat-emblem {
   position: relative;
   z-index: 3;
-  width: 68%;
+  width: 66%;
+  max-width: 250px;
   height: auto;
   object-fit: contain;
-  margin-bottom: -6%;
-  animation: catEmblemFloat 2s ease-in-out infinite alternate;
-}
-@keyframes catEmblemFloat {
-  0% { transform: scale(0.97); }
-  100% { transform: scale(1.03); }
+  margin-bottom: -4%;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.8));
 }
 .celebration-box {
   position: relative;
   z-index: 4;
-  width: 92%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: 14px;
 }
 .celeb-title-img {
-  width: 78%;
-  max-height: 95px;
+  width: 84%;
+  max-width: 310px;
+  height: auto;
   object-fit: contain;
-  margin-bottom: 10px;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.75));
+  animation: celebPulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes celebPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
 }
 .celeb-amount-sprites {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: center;
   flex-wrap: nowrap;
-  height: 46px;
-  margin-bottom: 6px;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+  height: 44px;
+  max-width: 96%;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85));
 }
-.bw-digit-sp, .tw-digit-sp {
+.bw-digit-sp,
+.tw-digit-sp {
   height: 100%;
   width: auto;
   object-fit: contain;
@@ -1829,25 +2084,29 @@ html, body {
   height: 36%;
   width: auto;
   object-fit: contain;
-  align-self: flex-end;
+  margin-bottom: 2px;
 }
 .celebration-amount {
-  font-size: clamp(16px, 2.4vh, 22px);
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 800;
   color: #ffe082;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-  margin-bottom: 18px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
 }
 .celeb-collect-btn {
   position: relative;
-  width: 54%;
-  aspect-ratio: 407 / 152;
+  width: 56%;
+  max-width: 210px;
+  aspect-ratio: 264 / 100;
   border: none;
   background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 8px;
+}
+.celeb-collect-btn:active {
+  transform: scale(0.95);
 }
 .collect-bg {
   position: absolute;
@@ -1859,13 +2118,13 @@ html, body {
 .collect-txt {
   position: relative;
   z-index: 2;
-  width: 62%;
+  width: 65%;
   height: auto;
   object-fit: contain;
 }
 
 /* ==========================================
-   9. SHEET MODALS (BET, AUTO, PAYTABLE, HISTORY)
+   9. DRAWERS & MODALS (BET, AUTO, HISTORY, PAYTABLE)
    ========================================== */
 .sheet-modal {
   position: absolute;
@@ -1882,7 +2141,7 @@ html, body {
 .sheet-box {
   width: 100%;
   max-height: 78%;
-  background: linear-gradient(180deg, #2b121e 0%, #16080f 100%);
+  background: linear-gradient(180deg, #2b111e 0%, #16070f 100%);
   border-top: 2px solid #ffd54f;
   border-radius: 20px 20px 0 0;
   padding: 16px;
@@ -1895,7 +2154,7 @@ html, body {
   justify-content: space-between;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 213, 79, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 .sheet-title {
   font-size: 15px;
@@ -1903,49 +2162,74 @@ html, body {
   color: #ffe082;
 }
 .sheet-close {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: #ffffff;
-  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   cursor: pointer;
+  font-weight: 700;
 }
 .sheet-desc {
   font-size: 12px;
-  color: #e0c8d2;
   line-height: 1.45;
+  color: #e0c8d0;
   margin-bottom: 12px;
 }
-.bet-options-grid, .auto-options-grid {
+
+.bet-options-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
-.bet-choice-btn, .auto-opt-btn {
-  padding: 11px 8px;
+.bet-choice-btn {
+  padding: 10px 6px;
   border-radius: 10px;
   border: 1px solid rgba(255, 213, 79, 0.3);
   background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
-.bet-choice-btn.active, .auto-opt-btn:hover {
-  background: linear-gradient(180deg, #f06292 0%, #c2185b 100%);
-  border-color: #ff80ab;
+.bet-choice-btn.active {
+  background: linear-gradient(180deg, #f57c00 0%, #e65100 100%);
+  border-color: #ffd54f;
 }
+
+.auto-options-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.auto-opt-btn {
+  padding: 12px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 213, 79, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffe082;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.auto-opt-btn:hover {
+  background: rgba(233, 62, 123, 0.45);
+}
+
 .paytable-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 .paytable-item {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 213, 79, 0.2);
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px 6px;
   text-align: center;
 }
+
 .history-list {
   display: flex;
   flex-direction: column;
@@ -1954,7 +2238,7 @@ html, body {
 .history-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   font-size: 12px;

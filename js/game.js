@@ -1,6 +1,7 @@
 // Official PG Soft Lucky Neko (Game ID 89) — Complete 1:1 Game Engine
 // Features: 4-Cell Top Horizontal Reel + 6x5 Multi-Row Main Reel (Up to 32,400 Ways),
-// Silver Frame -> Gold Frame -> Wild (Wilds-on-the-Way), +2 Cat Multiplier, Feature Buy & Free Spins
+// Blurred Spin Strips, 3-Scatter Slowdrop Anticipation, Silver->Gold Roulette Shuffle,
+// Gold->Wild Morph, Flying x2 Cat Multiplier Arc, Feature Buy & Free Spins
 (function () {
   const COLS = 6;
   const PLAYABLE_ROWS = 5;
@@ -42,12 +43,15 @@
     sakuraPetalsLayer: document.getElementById('sakuraPetalsLayer'),
     waysSpritesBox: document.getElementById('waysSpritesBox'),
     topReelBoard: document.getElementById('topReelBoard'),
+    topReelMask: document.querySelector('.top-reel-mask'),
     reelBoard: document.getElementById('reelBoard'),
+    mainReelMask: document.querySelector('.main-reel-mask'),
     reelCols: [],
     symbolPayoutPopup: document.getElementById('symbolPayoutPopup'),
     symbolPayoutCard: document.getElementById('symbolPayoutCard'),
     catBadge: document.getElementById('catBadge'),
     catMultVal: document.getElementById('catMultVal'),
+    flyMultiplierLayer: document.getElementById('flyMultiplierLayer'),
     featureBuyBtn: document.getElementById('featureBuyBtn'),
     featureBuyModal: document.getElementById('featureBuyModal'),
     fbModalPrice: document.getElementById('fbModalPrice'),
@@ -117,6 +121,29 @@
     installGuideModal: document.getElementById('installGuideModal'),
     closeInstallGuideBtn: document.getElementById('closeInstallGuideBtn')
   };
+
+  function ensureDynamicLayers() {
+    if (!els.flyMultiplierLayer && els.gameShell) {
+      const layer = document.createElement('div');
+      layer.className = 'fly-multiplier-layer';
+      layer.id = 'flyMultiplierLayer';
+      els.gameShell.appendChild(layer);
+      els.flyMultiplierLayer = layer;
+    }
+    const pond = document.querySelector('.koi-pond-decor');
+    if (pond && !pond.querySelector('.lily-mid-low')) {
+      const dDay = document.createElement('img');
+      dDay.className = 'pond-lily lily-mid-low day-only';
+      dDay.src = `${NEKO_DIR}ui_pool_02_d_tight.png`;
+      dDay.draggable = false;
+      const dNight = document.createElement('img');
+      dNight.className = 'pond-lily lily-mid-low night-only';
+      dNight.src = `${NEKO_DIR}bns_pool_02_d_tight.png`;
+      dNight.draggable = false;
+      pond.appendChild(dDay);
+      pond.appendChild(dNight);
+    }
+  }
 
   function formatIDR(amount) {
     return 'Rp' + Math.floor(amount).toLocaleString('id-ID') + ',00';
@@ -214,6 +241,7 @@
 
   // Initialize with the exact 10,800 CARA attract board from the live PG Soft Lucky Neko game
   function initializeDefaultBoard() {
+    state.catMultiplier = 2; // Attract board has 2 Neko symbols (top reel + col 1) -> x2 active
     state.topGrid = [
       createCell('drum', 1, 'none'),
       createCell('f_sushi', 1, 'none'),
@@ -285,21 +313,74 @@
     return ways;
   }
 
-  function renderTopReel(isBlurred = false) {
+  function renderTopReel(isBlurred = false, cascadeNewFromIdx = -1) {
     if (!els.topReelBoard) return;
     els.topReelBoard.innerHTML = '';
-    for (let i = 0; i < TOP_REEL_CELLS; i++) {
-      const cell = state.topGrid[i];
+    const count = isBlurred ? TOP_REEL_CELLS * 2 : TOP_REEL_CELLS;
+    for (let i = 0; i < count; i++) {
+      const cell = isBlurred
+        ? createCell(pickRandomType(true), 1, 'none')
+        : state.topGrid[i];
       const slot = document.createElement('div');
       slot.className = 'top-cell-slot';
+      if (!isBlurred && cascadeNewFromIdx >= 0 && i >= cascadeNewFromIdx) {
+        slot.classList.add('cell-cascade-slide');
+        slot.style.animationDelay = `${(i - cascadeNewFromIdx) * 35}ms`;
+      }
       slot.dataset.topIdx = i;
       slot.innerHTML = window.NekoTiles.renderTileHTML(cell, isBlurred);
-      slot.addEventListener('click', (e) => {
+      if (!isBlurred) {
+        slot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!state.isSpinning && cell) showSymbolPayoutPopup(cell.type);
+        });
+      }
+      els.topReelBoard.appendChild(slot);
+    }
+  }
+
+  function renderMainColumnTrack(c, isBlurred = false, cascadeDropCount = 0) {
+    const colEl = els.reelCols[c];
+    if (!colEl) return;
+    const trackEl = colEl.querySelector('.neko-reel-track');
+    if (!trackEl) return;
+    trackEl.innerHTML = '';
+
+    if (isBlurred) {
+      // Build a 10-row (2x height) blurred symbol strip for seamless continuous downward scroll
+      for (let pass = 0; pass < 2; pass++) {
+        const stripCells = generateColumnCells(c);
+        stripCells.forEach((cell) => {
+          const span = cell.span || 1;
+          const cellEl = document.createElement('div');
+          cellEl.className = `neko-cell-slot span-${span}`;
+          cellEl.style.height = `${span * 10}%`;
+          cellEl.style.flex = `${span} 0 ${span * 10}%`;
+          cellEl.innerHTML = window.NekoTiles.renderTileHTML(cell, true);
+          trackEl.appendChild(cellEl);
+        });
+      }
+      return;
+    }
+
+    const colCells = state.grid[c] || [];
+    colCells.forEach((cell, idx) => {
+      const span = cell.span || 1;
+      const cellEl = document.createElement('div');
+      cellEl.className = `neko-cell-slot span-${span}`;
+      if (cascadeDropCount > 0 && idx < cascadeDropCount) {
+        cellEl.classList.add('cell-cascade-drop');
+        cellEl.style.animationDelay = `${c * 25 + idx * 35}ms`;
+      }
+      cellEl.dataset.col = c;
+      cellEl.dataset.idx = idx;
+      cellEl.innerHTML = window.NekoTiles.renderTileHTML(cell, false);
+      cellEl.addEventListener('click', (e) => {
         e.stopPropagation();
         if (!state.isSpinning && cell) showSymbolPayoutPopup(cell.type);
       });
-      els.topReelBoard.appendChild(slot);
-    }
+      trackEl.appendChild(cellEl);
+    });
   }
 
   function renderMainReels(isBlurred = false) {
@@ -313,25 +394,11 @@
 
       const trackEl = document.createElement('div');
       trackEl.className = 'neko-reel-track';
-
-      const colCells = state.grid[c] || [];
-      colCells.forEach((cell, idx) => {
-        const span = cell.span || 1;
-        const cellEl = document.createElement('div');
-        cellEl.className = `neko-cell-slot span-${span}`;
-        cellEl.dataset.col = c;
-        cellEl.dataset.idx = idx;
-        cellEl.innerHTML = window.NekoTiles.renderTileHTML(cell, isBlurred);
-        cellEl.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (!state.isSpinning && cell) showSymbolPayoutPopup(cell.type);
-        });
-        trackEl.appendChild(cellEl);
-      });
-
       colEl.appendChild(trackEl);
+
       els.reelBoard.appendChild(colEl);
       els.reelCols.push(colEl);
+      renderMainColumnTrack(c, isBlurred, 0);
     }
   }
 
@@ -339,6 +406,11 @@
     renderTopReel(isBlurred);
     renderMainReels(isBlurred);
     calculateAndRenderWays();
+  }
+
+  function setBoardWinDimmer(active) {
+    if (els.mainReelMask) els.mainReelMask.classList.toggle('board-has-win', active);
+    if (els.topReelMask) els.topReelMask.classList.toggle('board-has-win', active);
   }
 
   // Show authentic Symbol Payout Popup when a player taps any tile on the board
@@ -370,7 +442,7 @@
     els.balanceVal.textContent = formatIDR(state.balance);
     els.betVal.textContent = formatIDR(BET_OPTIONS[state.betIndex]);
 
-    // Cat Multiplier Plaque in Shrine
+    // Cat Multiplier Display in Shrine (multiplier_controller)
     const displayMult = state.inFreeSpins ? Math.max(2, state.catMultiplier) : state.catMultiplier;
     if (displayMult >= 2) {
       els.catBadge.classList.add('active');
@@ -418,14 +490,19 @@
   // Infoboard Win / Total Win Display using authentic PG Soft sprites
   function showBannerWin(amount, isTotalWin = false) {
     if (amount <= 0) {
-      els.bannerWin.classList.remove('win-mode');
+      els.bannerWin.classList.remove('win-mode', 'total-win-mode');
       els.ibBarBg.src = `${NEKO_DIR}ib_bar_a_tight.png`;
       els.ibTipMarquee.classList.remove('hidden');
       els.ibWinDisplay.classList.add('hidden');
+      if (!state.inFreeSpins) {
+        els.pillWinBox.classList.add('hidden');
+        els.pgShieldIcon.classList.remove('hidden');
+      }
       return;
     }
 
     els.bannerWin.classList.add('win-mode');
+    els.bannerWin.classList.toggle('total-win-mode', isTotalWin);
     els.ibBarBg.src = isTotalWin ? `${NEKO_DIR}ib_bar_c_tight.png` : `${NEKO_DIR}ib_bar_b_tight.png`;
     els.ibWinTag.src = isTotalWin ? `${NEKO_DIR}tw_info_tight.png` : `${NEKO_DIR}win_info_tight.png`;
     els.bannerWinVal.innerHTML = window.NekoTiles.renderInfoAmountSprites(amount);
@@ -438,8 +515,48 @@
   }
 
   function highlightCatBadge() {
+    els.catBadge.classList.remove('glowing');
+    void els.catBadge.offsetWidth;
     els.catBadge.classList.add('active', 'glowing');
-    setTimeout(() => els.catBadge.classList.remove('glowing'), 950);
+    setTimeout(() => els.catBadge.classList.remove('glowing'), 520);
+  }
+
+  // Spawn a flying x2 badge from a Neko tile's bounding rect to the Shrine Cat Multiplier (#catBadge)
+  function spawnFlyingMultiplierParticle(sourceEl) {
+    ensureDynamicLayers();
+    if (!els.flyMultiplierLayer || !sourceEl || !els.catBadge) return;
+
+    const shellRect = els.gameShell.getBoundingClientRect();
+    const srcRect = sourceEl.getBoundingClientRect();
+    const dstRect = els.catBadge.getBoundingClientRect();
+
+    const startX = (srcRect.left + srcRect.width / 2) - shellRect.left;
+    const startY = (srcRect.bottom - srcRect.height * 0.22) - shellRect.top;
+    const endX = (dstRect.left + dstRect.width / 2) - shellRect.left;
+    const endY = (dstRect.top + dstRect.height / 2) - shellRect.top;
+
+    const flyer = document.createElement('div');
+    flyer.className = 'flying-cat-mult';
+    flyer.style.left = `${startX}px`;
+    flyer.style.top = `${startY}px`;
+    flyer.style.transform = 'scale(1.25)';
+    flyer.innerHTML = `
+      <img class="fly-x" src="${NEKO_DIR}multiplier_x_tight.png" alt="x" draggable="false" />
+      <img class="fly-2" src="${NEKO_DIR}multiplier_2_tight.png" alt="2" draggable="false" />
+    `;
+    els.flyMultiplierLayer.appendChild(flyer);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        flyer.style.left = `${endX}px`;
+        flyer.style.top = `${endY}px`;
+        flyer.style.transform = 'scale(0.95)';
+      });
+    });
+
+    setTimeout(() => {
+      flyer.remove();
+    }, 390);
   }
 
   // Evaluate 6-Reel + 4-Cell Top Horizontal Reel Ways to Win
@@ -516,18 +633,17 @@
     };
   }
 
-  // Count and animate Lucky Cat (+2 Multiplier per Cat symbol on board)
+  // Authentic PG Soft Cat Multiplier Sequence: Spawn on Neko tile -> Fly arc -> Reach shrine multiplier
   async function checkAndApplyCatMultipliers(countedIds) {
-    let newCats = 0;
+    const newCatSlots = [];
 
     // Check Top Horizontal Reel
     for (let i = 0; i < TOP_REEL_CELLS; i++) {
       const cell = state.topGrid[i];
       if (cell && cell.type === 'neko' && !countedIds.has(cell.id)) {
         countedIds.add(cell.id);
-        newCats++;
         const slot = els.topReelBoard.children[i];
-        if (slot) slot.classList.add('cat-bounce');
+        if (slot) newCatSlots.push(slot);
       }
     }
 
@@ -537,20 +653,64 @@
       colCells.forEach((cell, idx) => {
         if (cell && cell.type === 'neko' && !countedIds.has(cell.id)) {
           countedIds.add(cell.id);
-          newCats++;
           const slot = els.reelCols[c].querySelector(`.neko-cell-slot[data-idx="${idx}"]`);
-          if (slot) slot.classList.add('cat-bounce');
+          if (slot) newCatSlots.push(slot);
         }
       });
     }
 
-    if (newCats > 0) {
-      state.catMultiplier += newCats * 2;
-      highlightCatBadge();
+    if (newCatSlots.length > 0) {
+      const isMultiple = newCatSlots.length > 1;
+      // 1. Spawn pulse on Neko tiles (symMultiSpawn)
+      window.MahjongSound.playCatSpawn();
+      newCatSlots.forEach(slot => slot.classList.add('cat-bounce'));
+      await sleep(130, 70);
+
+      // 2. Launch flying x2 particles toward shrine (symMultiFly / symMultiFlyB)
+      window.MahjongSound.playCatFly(isMultiple);
+      newCatSlots.forEach(slot => spawnFlyingMultiplierParticle(slot));
+      await sleep(340, 180);
+
+      // 3. Impact on shrine multiplier badge (symMultiReach / symMultiReachB)
+      state.catMultiplier += newCatSlots.length * 2;
+      window.MahjongSound.playCatReach(isMultiple);
       updateDashboardUI();
-      window.MahjongSound.playMultiplierUp(Math.min(3, newCats));
-      await sleep(420, 200);
+      highlightCatBadge();
+      await sleep(240, 120);
     }
+  }
+
+  // Animate Silver-framed winning tiles rolling through symbol glyphs before settling into Gold frame
+  async function animateSilverToGoldRoulette(silverItems) {
+    if (silverItems.length === 0) return;
+
+    window.MahjongSound.playRouletteStart();
+    silverItems.forEach(({ slot }) => {
+      if (slot) slot.classList.add('tile-roulette-rolling');
+    });
+
+    const rollSteps = state.isTurbo ? 3 : 6;
+    for (let s = 0; s < rollSteps; s++) {
+      silverItems.forEach(({ slot, span }) => {
+        if (!slot) return;
+        const glyphImg = slot.querySelector('.neko-glyph');
+        if (glyphImg) {
+          const randType = REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
+          const randSym = window.NekoTiles.SYMBOLS[randType];
+          glyphImg.src = window.NekoTiles.getGlyphFile(randSym, span, true);
+        }
+      });
+      await waitMs(65);
+    }
+
+    // Settle on final Gold-framed symbol
+    window.MahjongSound.playRouletteEnd();
+    silverItems.forEach(({ slot, cell }) => {
+      if (!slot || !cell) return;
+      slot.classList.remove('tile-roulette-rolling', 'winning-cell');
+      slot.classList.add('tile-morph-wild');
+      slot.innerHTML = window.NekoTiles.renderTileHTML(cell, false);
+    });
   }
 
   // Core Spin Execution
@@ -558,6 +718,7 @@
     if (state.isSpinning) return;
     if (els.symbolPayoutPopup) els.symbolPayoutPopup.classList.add('hidden');
     if (els.utilityDrawer) els.utilityDrawer.classList.add('hidden');
+    setBoardWinDimmer(false);
 
     const currentBet = BET_OPTIONS[state.betIndex];
 
@@ -571,7 +732,7 @@
         }
         state.balance -= currentBet;
       }
-      state.catMultiplier = 0; // Reset on normal spin
+      state.catMultiplier = 0; // Reset on normal spin in base game
       showBannerWin(0, false);
     }
 
@@ -580,13 +741,20 @@
     els.spinArrowImg.src = `${NEKO_DIR}sb_arrow_tight.png`;
     updateDashboardUI();
 
-    window.MahjongSound.playSpinStart();
+    window.MahjongSound.playSpinStart(state.inFreeSpins);
 
-    // 1. Start Spin Blur Animation on Top Reel & Main 6 Columns
+    // 1. Start Continuous Motion-Blurred Strip Spin on Top Reel & Main 6 Columns
+    renderTopReel(true);
+    els.topReelBoard.classList.remove('top-landing');
     els.topReelBoard.classList.add('top-spinning');
-    els.reelCols.forEach(col => col.classList.add('reel-spinning'));
 
-    await sleep(420, 160);
+    for (let c = 0; c < COLS; c++) {
+      renderMainColumnTrack(c, true, 0);
+      els.reelCols[c].classList.remove('column-landing', 'col-slowdrop-anticipation');
+      els.reelCols[c].classList.add('reel-spinning');
+    }
+
+    await sleep(420, 150);
 
     // 2. Generate New Symbols for Top Reel and Main 6x5 Reel
     state.topGrid = [];
@@ -600,9 +768,13 @@
 
     // Apply Forced Demo / Feature Buy Outcomes if requested
     if (forcedMode === 'scatter' || forcedMode === 'feature_buy') {
+      state.topGrid[1] = createCell('scatter', 1, 'none');
       state.grid[0][1] = createCell('scatter', 1, 'none');
-      state.grid[1][0] = createCell('scatter', state.grid[1][0].span, 'none');
-      state.grid[3][0] = createCell('scatter', state.grid[3][0].span, 'none');
+      state.grid[2] = [
+        createCell('scatter', 1, 'none'),
+        createCell('drum', 2, 'silver'),
+        createCell('card_k', 2, 'none')
+      ];
       state.grid[5][2] = createCell('scatter', 1, 'none');
     } else if (forcedMode === 'cat_win') {
       state.topGrid[0] = createCell('neko', 1, 'none');
@@ -614,31 +786,42 @@
       state.grid[3] = [createCell('drum', 2, 'silver'), createCell('wild', 1, 'none'), createCell('neko', 2, 'none')];
     }
 
-    // 3. Stop Top Horizontal Reel & Main Reels Left-to-Right
+    // 3. Stop Top Horizontal Reel & Main Reels Left-to-Right (with 3-Scatter Slowdrop Anticipation)
     els.topReelBoard.classList.remove('top-spinning');
     renderTopReel(false);
+    els.topReelBoard.classList.add('top-landing');
+    let landedScatters = state.topGrid.filter(cell => cell && cell.type === 'scatter').length;
+    window.MahjongSound.playReelStop(landedScatters > 0, state.isTurbo);
+    setTimeout(() => els.topReelBoard.classList.remove('top-landing'), 260);
+
+    let slowdropActive = false;
 
     for (let c = 0; c < COLS; c++) {
-      await sleep(115, 40);
-      els.reelCols[c].classList.remove('reel-spinning');
-      const track = els.reelCols[c].querySelector('.neko-reel-track');
-      track.innerHTML = '';
-      state.grid[c].forEach((cell, idx) => {
-        const span = cell.span || 1;
-        const cellEl = document.createElement('div');
-        cellEl.className = `neko-cell-slot span-${span}`;
-        cellEl.dataset.col = c;
-        cellEl.dataset.idx = idx;
-        cellEl.innerHTML = window.NekoTiles.renderTileHTML(cell, false);
-        cellEl.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (!state.isSpinning && cell) showSymbolPayoutPopup(cell.type);
-        });
-        track.appendChild(cellEl);
-      });
+      if (slowdropActive && !state.isTurbo) {
+        els.reelCols[c].classList.add('col-slowdrop-anticipation');
+        await waitMs(780);
+      } else {
+        await sleep(130, 45);
+      }
 
-      const hasScatter = state.grid[c].some(cell => cell.type === 'scatter');
-      window.MahjongSound.playReelStop(hasScatter, state.isTurbo);
+      const colEl = els.reelCols[c];
+      colEl.classList.remove('reel-spinning', 'col-slowdrop-anticipation');
+      renderMainColumnTrack(c, false, 0);
+      colEl.classList.add('column-landing');
+      setTimeout(() => colEl.classList.remove('column-landing'), 260);
+
+      const colScatters = state.grid[c].filter(cell => cell && cell.type === 'scatter').length;
+      landedScatters += colScatters;
+      window.MahjongSound.playReelStop(colScatters > 0, state.isTurbo);
+
+      if (!slowdropActive && landedScatters >= 3 && c < COLS - 1 && !state.isTurbo) {
+        slowdropActive = true;
+        window.MahjongSound.playSlowdropStart();
+      }
+    }
+
+    if (slowdropActive) {
+      window.MahjongSound.stopSlowdrop();
     }
 
     calculateAndRenderWays();
@@ -664,7 +847,8 @@
       spinTotalWin += stepWin;
       state.balance += stepWin;
 
-      // Highlight winning cells on Top Reel & Main Reel
+      // Activate black_tinter board dimmer & highlight winning cells
+      setBoardWinDimmer(true);
       result.winningTop.forEach(tIdx => {
         const slot = els.topReelBoard.children[tIdx];
         if (slot) slot.classList.add('winning-cell');
@@ -674,60 +858,90 @@
         if (slot) slot.classList.add('winning-cell');
       });
 
-      window.MahjongSound.playCascadeWin(cascadeStep - 1, null, result.winDetails.length > 1);
+      window.MahjongSound.playCascadeWin(activeMult > 1);
       showBannerWin(stepWin, false);
       updateDashboardUI();
 
-      await sleep(700, 320);
+      await sleep(620, 260);
 
-      // Wilds-on-the-Way Transformation:
-      // Silver Frame -> Random Symbol with Gold Frame
-      // Gold Frame   -> WILD
-      // Normal       -> Shatter & Cascade
-      let morphedAny = false;
+      // Partition winning cells into Silver->Gold Roulette, Gold->Wild Morph, and Normal Shatter
+      const silverRouletteItems = [];
+      const goldToWildSlots = [];
+      let shatteredAny = false;
+
       for (const { c, idx } of result.winningMain) {
+        const slot = els.reelCols[c].querySelector(`.neko-cell-slot[data-idx="${idx}"]`);
         const cell = state.grid[c][idx];
         if (!cell) continue;
+
         if (cell.silver) {
           cell.type = REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
           cell.silver = false;
           cell.gold = true;
           cell.id = Math.random().toString(36).slice(2, 9);
-          morphedAny = true;
+          silverRouletteItems.push({ slot, cell, span: cell.span || 1 });
         } else if (cell.gold && cell.type !== 'wild') {
           cell.type = 'wild';
           cell.gold = false;
           cell.silver = false;
           cell.id = Math.random().toString(36).slice(2, 9);
-          morphedAny = true;
+          goldToWildSlots.push({ slot, cell });
         } else {
+          if (slot) {
+            slot.classList.remove('winning-cell');
+            slot.classList.add('tile-shattering');
+          }
           state.grid[c][idx] = null;
+          shatteredAny = true;
         }
       }
 
       for (const tIdx of result.winningTop) {
+        const slot = els.topReelBoard.children[tIdx];
+        if (slot) {
+          slot.classList.remove('winning-cell');
+          slot.classList.add('tile-shattering');
+        }
         state.topGrid[tIdx] = null;
+        shatteredAny = true;
       }
 
-      if (morphedAny) {
-        window.MahjongSound.playGoldToWild();
-      } else {
+      if (shatteredAny) {
         window.MahjongSound.playTileShatter();
       }
 
-      await sleep(300, 140);
+      if (goldToWildSlots.length > 0) {
+        window.MahjongSound.playGoldToWild();
+        goldToWildSlots.forEach(({ slot, cell }) => {
+          if (!slot) return;
+          slot.classList.remove('winning-cell');
+          slot.classList.add('tile-morph-wild');
+          slot.innerHTML = window.NekoTiles.renderTileHTML(cell, false);
+        });
+      }
+
+      if (silverRouletteItems.length > 0) {
+        await animateSilverToGoldRoulette(silverRouletteItems);
+      } else {
+        await sleep(240, 120);
+      }
+
+      setBoardWinDimmer(false);
 
       // Refill Top Horizontal Reel (slides right-to-left)
       const topSurvivors = state.topGrid.filter(x => x !== null);
+      const topSurvivorCount = topSurvivors.length;
       while (topSurvivors.length < TOP_REEL_CELLS) {
         topSurvivors.push(createCell(null, 1));
       }
       state.topGrid = topSurvivors;
+      renderTopReel(false, topSurvivorCount < TOP_REEL_CELLS ? topSurvivorCount : -1);
 
-      // Refill Main 6 Columns so each column's spans sum to PLAYABLE_ROWS (5)
+      // Refill Main 6 Columns so each column's spans sum to PLAYABLE_ROWS (5) with gravity drop animation
       for (let c = 0; c < COLS; c++) {
         const survivors = state.grid[c].filter(x => x !== null);
         let usedRows = survivors.reduce((sum, cell) => sum + (cell.span || 1), 0);
+        let newCount = 0;
         while (usedRows < PLAYABLE_ROWS) {
           const rem = PLAYABLE_ROWS - usedRows;
           let span = 1;
@@ -736,21 +950,26 @@
           }
           survivors.unshift(createCell(null, span));
           usedRows += span;
+          newCount++;
         }
         state.grid[c] = survivors;
+        renderMainColumnTrack(c, false, newCount > 0 ? survivors.length : 0);
       }
 
-      renderAllReels(false);
+      calculateAndRenderWays();
       window.MahjongSound.playTileCollapseImpact();
       await sleep(340, 160);
 
-      // Check if any newly cascaded Neko symbols landed
+      // Check if any newly cascaded or roulette-revealed Neko symbols landed
       await checkAndApplyCatMultipliers(countedCatIds);
     }
+
+    setBoardWinDimmer(false);
 
     // Show Total Win on Infoboard if won
     if (spinTotalWin > 0) {
       showBannerWin(spinTotalWin, true);
+      window.MahjongSound.playTotalWinInfobar(spinTotalWin >= currentBet * 5);
       state.history.unshift({
         time: new Date().toTimeString().slice(0, 8),
         bet: currentBet,
@@ -762,7 +981,6 @@
 
     // 5. Big Win / Mega Win / Super Mega Win Celebration if spinTotalWin >= 15x bet
     if (spinTotalWin >= currentBet * 15) {
-      window.MahjongSound.playScatterTrigger(false);
       let tier = 'bw'; // MENANG BESAR
       if (spinTotalWin >= currentBet * 50) tier = 'smw'; // MENANG SUPER LUAR BIASA
       else if (spinTotalWin >= currentBet * 30) tier = 'mw'; // MENANG LUAR BIASA
@@ -778,7 +996,8 @@
 
     if (scatterCount >= 4 && !state.inFreeSpins) {
       const awarded = 10 + (scatterCount - 4) * 2;
-      window.MahjongSound.playScatterTrigger(true);
+      window.MahjongSound.playScatterTrigger();
+      await sleep(900, 450);
       await showFreeSpinsIntroModal(awarded);
       state.inFreeSpins = true;
       state.freeSpinsRemaining = awarded;
@@ -792,6 +1011,7 @@
         const extra = 10 + (scatterCount - 4) * 2;
         state.freeSpinsRemaining += extra;
         state.freeSpinsTotalAwarded += extra;
+        window.MahjongSound.playFsRemainingIncrease();
       }
       state.freeSpinsRemaining--;
       state.freeSpinsTotalWon += spinTotalWin;
@@ -826,6 +1046,7 @@
   // Authentic Free Spins Intro Modal (fs_bg.jpg + fsw_tight.png + MULAI button)
   function showFreeSpinsIntroModal(spinsAwarded) {
     return new Promise(resolve => {
+      window.MahjongSound.playFreeSpinsIntro();
       els.fsWonCountSprites.innerHTML = window.NekoTiles.renderCelebrationNumberSprites(spinsAwarded, 'fs_count');
       els.fsIntroModal.classList.add('active');
 
@@ -850,9 +1071,10 @@
       };
       els.celebTitleImg.src = `${NEKO_DIR}${spriteMap[tier] || 'bw_tight.png'}`;
       els.celebModal.classList.add('active');
+      window.MahjongSound.startBigWinBgm(tier === 'tw');
 
       let current = 0;
-      const step = Math.max(1, Math.floor(amount / 32));
+      const step = Math.max(1, Math.floor(amount / 30));
       let finished = false;
 
       const finishRollup = () => {
@@ -861,7 +1083,6 @@
         clearInterval(timer);
         els.celebAmountSprites.innerHTML = window.NekoTiles.renderCelebrationNumberSprites(amount, tier === 'tw' ? 'tw' : 'bw');
         els.celebAmount.textContent = formatIDR(amount);
-        window.MahjongSound.playBigWinEnd();
       };
 
       const closeCelebration = () => {
@@ -872,6 +1093,7 @@
         els.celebCollectBtn.removeEventListener('click', closeCelebration);
         clearInterval(timer);
         window.MahjongSound.playCollect();
+        window.MahjongSound.stopBigWinBgm();
         els.celebModal.classList.remove('active');
         resolve();
       };
@@ -890,7 +1112,7 @@
             if (els.celebModal.classList.contains('active')) {
               closeCelebration();
             }
-          }, 2200);
+          }, 2400);
         }
       }, 45);
     });
@@ -967,7 +1189,7 @@
     if (els.featureBuyBtn) {
       els.featureBuyBtn.addEventListener('click', () => {
         if (state.isSpinning || state.inFreeSpins) return;
-        window.MahjongSound.playUiClick();
+        window.MahjongSound.playFeatureBuyOpen();
         const cost = BET_OPTIONS[state.betIndex] * 75;
         els.fbModalPrice.textContent = formatIDR(cost);
         els.featureBuyModal.classList.add('open');
@@ -976,7 +1198,7 @@
 
     if (els.fbCancelBtn) {
       els.fbCancelBtn.addEventListener('click', () => {
-        window.MahjongSound.playUiClick();
+        window.MahjongSound.playFeatureBuyCancel();
         els.featureBuyModal.classList.remove('open');
       });
     }
@@ -988,6 +1210,7 @@
           alert('Saldo tidak mencukupi untuk Beli Fitur! Klik dompet saldo untuk isi ulang demo.');
           return;
         }
+        window.MahjongSound.playFeatureBuyStart();
         state.balance -= cost;
         els.featureBuyModal.classList.remove('open');
         updateDashboardUI();
@@ -1003,6 +1226,7 @@
 
     document.querySelectorAll('.auto-opt-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        window.MahjongSound.playListItemClick();
         const count = parseInt(btn.dataset.spins, 10);
         state.autoSpinsRemaining = count;
         els.autoSheetModal.classList.remove('open');
@@ -1012,6 +1236,7 @@
     });
 
     els.closeAutoSheetBtn.addEventListener('click', () => {
+      window.MahjongSound.playUiClick();
       els.autoSheetModal.classList.remove('open');
     });
 
@@ -1019,7 +1244,7 @@
     if (els.menuToggleBtn) {
       els.menuToggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        window.MahjongSound.playUiClick();
+        window.MahjongSound.playMenuToggle();
         els.utilityDrawer.classList.toggle('hidden');
       });
     }
@@ -1044,6 +1269,7 @@
     });
 
     els.closeBetSheetBtn.addEventListener('click', () => {
+      window.MahjongSound.playUiClick();
       els.betSheetModal.classList.remove('open');
     });
 
@@ -1055,6 +1281,7 @@
         btn.className = `bet-choice-btn ${idx === state.betIndex ? 'active' : ''}`;
         btn.textContent = formatIDR(val);
         btn.addEventListener('click', () => {
+          window.MahjongSound.playListItemClick();
           state.betIndex = idx;
           els.betSheetModal.classList.remove('open');
           updateDashboardUI();
@@ -1104,6 +1331,7 @@
     if (els.rulesBtn) els.rulesBtn.addEventListener('click', openPaytable);
 
     els.closePaytableBtn.addEventListener('click', () => {
+      window.MahjongSound.playUiClick();
       els.paytableModal.classList.remove('open');
     });
 
@@ -1137,6 +1365,7 @@
 
     if (els.closeHistoryBtn) {
       els.closeHistoryBtn.addEventListener('click', () => {
+        window.MahjongSound.playUiClick();
         els.historyModal.classList.remove('open');
       });
     }
@@ -1193,6 +1422,7 @@
 
   // Initialize Game on DOMContentLoaded
   window.addEventListener('DOMContentLoaded', () => {
+    ensureDynamicLayers();
     initializeDefaultBoard();
     renderAllReels(false);
     initSakuraPetals();
