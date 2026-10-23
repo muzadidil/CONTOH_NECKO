@@ -566,7 +566,7 @@ html, body {
   height: 100%;
   overflow: visible;
   cursor: pointer;
-  transition: filter 0.2s ease, transform 0.2s ease;
+  transition: filter 0.18s ease;
 }
 .top-reel-frame {
   position: absolute;
@@ -678,30 +678,34 @@ html, body {
   flex: 1 0 20%;
   overflow: visible;
   cursor: pointer;
-  transition: filter 0.2s ease, transform 0.2s ease;
+  transition: filter 0.18s ease;
 }
 .neko-cell-slot.span-1 { height: 20%; flex: 1 0 20%; }
 .neko-cell-slot.span-2 { height: 40%; flex: 2 0 40%; }
 .neko-cell-slot.span-3 { height: 60%; flex: 3 0 60%; }
 .neko-cell-slot.span-4 { height: 80%; flex: 4 0 80%; }
 
-/* Per-Cell Cascade Gravity Drop Animation */
+/* Per-Cell Cascade Gravity Drop Animation (60fps GPU translate3d, 100% opaque) */
 .neko-cell-slot.cell-cascade-drop {
-  animation: cascadeGravityDrop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cascadeGravityDrop 0.34s cubic-bezier(0.25, 0.9, 0.35, 1) both;
+  will-change: transform;
 }
 @keyframes cascadeGravityDrop {
-  0% { transform: translate3d(0, -95%, 0); opacity: 0.35; }
-  70% { transform: translate3d(0, 6%, 0); opacity: 1; }
-  100% { transform: translate3d(0, 0, 0); opacity: 1; }
+  0% { transform: translate3d(0, var(--drop-from, -100%), 0); }
+  74% { transform: translate3d(0, 4.5%, 0); }
+  88% { transform: translate3d(0, -1.5%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 
 .top-cell-slot.cell-cascade-slide {
-  animation: cascadeHorizontalSlide 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cascadeHorizontalSlide 0.32s cubic-bezier(0.25, 0.9, 0.35, 1) both;
+  will-change: transform;
 }
 @keyframes cascadeHorizontalSlide {
-  0% { transform: translate3d(85%, 0, 0); opacity: 0.4; }
-  70% { transform: translate3d(-5%, 0, 0); opacity: 1; }
-  100% { transform: translate3d(0, 0, 0); opacity: 1; }
+  0% { transform: translate3d(var(--slide-from, 100%), 0, 0); }
+  74% { transform: translate3d(-4.5%, 0, 0); }
+  88% { transform: translate3d(1.5%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 
 .main-reel-frame {
@@ -880,18 +884,36 @@ html, body {
   100% { transform: scale(0.15); opacity: 0; filter: brightness(2.2); }
 }
 
-/* Cat Symbol Bounce when spawning x2 Multiplier */
+/* Cat Symbol Bounce & x2 Badge Rocking when spawning Multiplier (fly_multiplier_controller) */
+.cat-bounce {
+  z-index: 16 !important;
+}
 .cat-bounce .neko-tile {
-  animation: catBoostBounce 0.52s cubic-bezier(0.28, 0.84, 0.42, 1);
-  z-index: 14;
+  animation: catBoostBounce 0.46s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 16;
+}
+.cat-bounce .neko-cat-mult-badge {
+  animation: catBadgeWobble 0.42s ease-in-out;
+}
+.cat-badge-launched .neko-cat-mult-badge {
+  opacity: 0.55;
+  transform: translateX(-50%) scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 @keyframes catBoostBounce {
   0% { transform: scale(1); }
-  45% { transform: scale(1.22); filter: brightness(1.38) drop-shadow(0 0 16px #ffd54f); }
+  40% { transform: scale(1.16); filter: brightness(1.35) drop-shadow(0 0 16px #ffd54f); }
   100% { transform: scale(1); }
 }
+@keyframes catBadgeWobble {
+  0%   { transform: translateX(-50%) scale(1) rotate(0deg); }
+  25%  { transform: translateX(-50%) scale(1.42) rotate(10deg); filter: brightness(1.5) drop-shadow(0 0 10px #fff59d); }
+  55%  { transform: translateX(-50%) scale(1.38) rotate(-10deg); filter: brightness(1.5) drop-shadow(0 0 10px #fff59d); }
+  80%  { transform: translateX(-50%) scale(1.25) rotate(4deg); }
+  100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+}
 
-/* Flying x2 Cat Multiplier Layer (fly_multiplier_controller) */
+/* Flying x2 Cat Multiplier Layer (fly_multiplier_controller — 60fps GPU Composited) */
 .fly-multiplier-layer {
   position: absolute;
   inset: 0;
@@ -901,36 +923,61 @@ html, body {
 }
 .flying-cat-mult {
   position: absolute;
-  width: 64px;
-  height: 44px;
-  margin-left: -32px;
-  margin-top: -22px;
+  left: 0;
+  top: 0;
+  width: 68px;
+  height: 46px;
+  margin-left: -34px;
+  margin-top: -23px;
   display: flex;
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0 0 12px #ffd54f) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85));
-  will-change: transform, left, top, opacity;
-  transition: left 0.36s cubic-bezier(0.22, 0.8, 0.36, 1),
-              top 0.36s cubic-bezier(0.32, 0.08, 0.68, 0.98),
-              transform 0.36s ease-out;
+  will-change: transform, opacity;
+  pointer-events: none;
 }
 .flying-cat-mult::before {
   content: "";
   position: absolute;
-  width: 72px;
-  height: 72px;
+  width: 78px;
+  height: 78px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 241, 118, 0.85) 0%, rgba(255, 179, 0, 0.35) 45%, transparent 72%);
+  background: radial-gradient(circle, rgba(255, 249, 196, 0.92) 0%, rgba(255, 193, 7, 0.45) 42%, transparent 72%);
   z-index: -1;
+  animation: flyShineRotate 0.45s linear infinite;
+}
+@keyframes flyShineRotate {
+  0% { transform: scale(0.92) rotate(0deg); }
+  50% { transform: scale(1.12) rotate(90deg); }
+  100% { transform: scale(0.92) rotate(180deg); }
 }
 .flying-cat-mult .fly-x {
-  height: 28px;
+  height: 29px;
   width: auto;
   margin-right: -3px;
 }
 .flying-cat-mult .fly-2 {
-  height: 36px;
+  height: 38px;
   width: auto;
+}
+.fly-sparkle-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #ffe082 55%, rgba(255, 160, 0, 0) 100%);
+  box-shadow: 0 0 8px #ffd54f;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: sparkleTrailFade 0.34s ease-out forwards;
+}
+@keyframes sparkleTrailFade {
+  0% { opacity: 0.95; transform: translate3d(var(--sx, 0px), var(--sy, 0px), 0) scale(1.1); }
+  100% { opacity: 0; transform: translate3d(var(--sx, 0px), calc(var(--sy, 0px) + 10px), 0) scale(0.15); }
 }
 
 /* Symbol Tap Payout Inspection Popup */

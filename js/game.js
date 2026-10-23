@@ -176,8 +176,12 @@
 
   const REGULAR_TYPES = ['neko', 'drum', 'lantern', 'fan', 'f_sushi', 'sushi', 'card_a', 'card_k', 'card_q', 'card_j', 'card_10'];
 
-  function pickRandomType(allowSpecial = true) {
-    const pool = allowSpecial ? WEIGHTED_POOL : WEIGHTED_POOL.filter(i => !['scatter', 'wild'].includes(i.type));
+  function pickRandomType(allowSpecial = true, allowWild = true) {
+    const pool = WEIGHTED_POOL.filter(i => {
+      if (!allowSpecial && (i.type === 'scatter' || i.type === 'wild')) return false;
+      if (!allowWild && i.type === 'wild') return false;
+      return true;
+    });
     const total = pool.reduce((acc, cur) => acc + cur.weight, 0);
     let rand = Math.random() * total;
     for (const item of pool) {
@@ -187,8 +191,8 @@
     return 'drum';
   }
 
-  function createCell(type = null, span = 1, frame = null) {
-    const cellType = type || pickRandomType(span === 1);
+  function createCell(type = null, span = 1, frame = null, allowWild = true) {
+    const cellType = type || pickRandomType(span === 1, allowWild);
     let silver = false;
     let gold = false;
 
@@ -209,17 +213,19 @@
       span: span,
       silver: silver,
       gold: gold,
+      dropRows: 0,
+      slideCols: 0,
       id: Math.random().toString(36).slice(2, 9)
     };
   }
 
   // Generate a column of cells whose spans sum to PLAYABLE_ROWS (5)
   function generateColumnCells(colIndex) {
-    // Columns 0 and 5 only have 1x1 symbols; Columns 1, 2, 3, 4 can have multi-row symbols (1x1..1x4)
+    // Columns 0 and 5 only have 1x1 symbols and NEVER have Wild; Columns 1, 2, 3, 4 can have Wild & multi-row symbols (1x1..1x4)
     if (colIndex === 0 || colIndex === 5) {
       const col = [];
       for (let r = 0; r < PLAYABLE_ROWS; r++) {
-        col.push(createCell(null, 1));
+        col.push(createCell(null, 1, 'none', false));
       }
       return col;
     }
@@ -232,8 +238,8 @@
         const maxSpan = Math.min(3, remaining);
         span = 2 + Math.floor(Math.random() * (maxSpan - 1));
       }
-      const symType = pickRandomType(span === 1);
-      col.push(createCell(symType, span, null));
+      const symType = pickRandomType(span === 1, true);
+      col.push(createCell(symType, span, null, true));
       remaining -= span;
     }
     return col;
@@ -313,19 +319,23 @@
     return ways;
   }
 
-  function renderTopReel(isBlurred = false, cascadeNewFromIdx = -1) {
+  function renderTopReel(isBlurred = false, isCascade = false) {
     if (!els.topReelBoard) return;
     els.topReelBoard.innerHTML = '';
     const count = isBlurred ? TOP_REEL_CELLS * 2 : TOP_REEL_CELLS;
     for (let i = 0; i < count; i++) {
       const cell = isBlurred
-        ? createCell(pickRandomType(true), 1, 'none')
+        ? createCell(pickRandomType(true, true), 1, 'none')
         : state.topGrid[i];
       const slot = document.createElement('div');
       slot.className = 'top-cell-slot';
-      if (!isBlurred && cascadeNewFromIdx >= 0 && i >= cascadeNewFromIdx) {
+      if (!isBlurred && isCascade && cell && cell.slideCols > 0) {
         slot.classList.add('cell-cascade-slide');
-        slot.style.animationDelay = `${(i - cascadeNewFromIdx) * 35}ms`;
+        slot.style.setProperty('--slide-from', `${cell.slideCols * 100}%`);
+        slot.style.animationDelay = `${i * 25}ms`;
+      }
+      if (!isBlurred && cell && cell._badgeLaunched) {
+        slot.classList.add('cat-badge-launched');
       }
       slot.dataset.topIdx = i;
       slot.innerHTML = window.NekoTiles.renderTileHTML(cell, isBlurred);
@@ -339,7 +349,7 @@
     }
   }
 
-  function renderMainColumnTrack(c, isBlurred = false, cascadeDropCount = 0) {
+  function renderMainColumnTrack(c, isBlurred = false, isCascade = false) {
     const colEl = els.reelCols[c];
     if (!colEl) return;
     const trackEl = colEl.querySelector('.neko-reel-track');
@@ -368,9 +378,14 @@
       const span = cell.span || 1;
       const cellEl = document.createElement('div');
       cellEl.className = `neko-cell-slot span-${span}`;
-      if (cascadeDropCount > 0 && idx < cascadeDropCount) {
+      if (isCascade && cell && cell.dropRows > 0) {
+        const dropPct = Math.round((cell.dropRows / span) * 100);
         cellEl.classList.add('cell-cascade-drop');
-        cellEl.style.animationDelay = `${c * 25 + idx * 35}ms`;
+        cellEl.style.setProperty('--drop-from', `-${dropPct}%`);
+        cellEl.style.animationDelay = `${c * 18 + idx * 22}ms`;
+      }
+      if (cell && cell._badgeLaunched) {
+        cellEl.classList.add('cat-badge-launched');
       }
       cellEl.dataset.col = c;
       cellEl.dataset.idx = idx;
@@ -488,7 +503,7 @@
   }
 
   // Infoboard Win / Total Win Display using authentic PG Soft sprites
-  function showBannerWin(amount, isTotalWin = false) {
+  function showBannerWin(amount, isTotalWin = false, cumulativeWin = null) {
     if (amount <= 0) {
       els.bannerWin.classList.remove('win-mode', 'total-win-mode');
       els.ibBarBg.src = `${NEKO_DIR}ib_bar_a_tight.png`;
@@ -497,6 +512,10 @@
       if (!state.inFreeSpins) {
         els.pillWinBox.classList.add('hidden');
         els.pgShieldIcon.classList.remove('hidden');
+      } else if (state.freeSpinsTotalWon > 0) {
+        els.winVal.textContent = formatIDR(state.freeSpinsTotalWon);
+        els.pillWinBox.classList.remove('hidden');
+        els.pgShieldIcon.classList.add('hidden');
       }
       return;
     }
@@ -509,7 +528,8 @@
     els.ibTipMarquee.classList.add('hidden');
     els.ibWinDisplay.classList.remove('hidden');
 
-    els.winVal.textContent = formatIDR(amount);
+    const pillAmount = cumulativeWin !== null ? cumulativeWin : amount;
+    els.winVal.textContent = formatIDR(pillAmount);
     els.pillWinBox.classList.remove('hidden');
     els.pgShieldIcon.classList.add('hidden');
   }
@@ -518,48 +538,103 @@
     els.catBadge.classList.remove('glowing');
     void els.catBadge.offsetWidth;
     els.catBadge.classList.add('active', 'glowing');
-    setTimeout(() => els.catBadge.classList.remove('glowing'), 520);
+    setTimeout(() => els.catBadge.classList.remove('glowing'), 460);
   }
 
-  // Spawn a flying x2 badge from a Neko tile's bounding rect to the Shrine Cat Multiplier (#catBadge)
-  function spawnFlyingMultiplierParticle(sourceEl) {
-    ensureDynamicLayers();
-    if (!els.flyMultiplierLayer || !sourceEl || !els.catBadge) return;
+  // 60fps GPU-Composited Bezier Arc for Flying x2 Badge (fly_multiplier_controller)
+  function spawnFlyingMultiplierParticle(sourceEl, cellObj = null) {
+    return new Promise(resolve => {
+      ensureDynamicLayers();
+      if (!els.flyMultiplierLayer || !sourceEl || !els.catBadge) {
+        resolve();
+        return;
+      }
 
-    const shellRect = els.gameShell.getBoundingClientRect();
-    const srcRect = sourceEl.getBoundingClientRect();
-    const dstRect = els.catBadge.getBoundingClientRect();
+      const shellRect = els.gameShell.getBoundingClientRect();
+      const badgeEl = sourceEl.querySelector('.neko-cat-mult-badge') || sourceEl;
+      const srcRect = badgeEl.getBoundingClientRect();
+      const shrineBar = document.querySelector('.shrine-lower-bar') || els.catBadge;
+      const dstRect = shrineBar.getBoundingClientRect();
 
-    const startX = (srcRect.left + srcRect.width / 2) - shellRect.left;
-    const startY = (srcRect.bottom - srcRect.height * 0.22) - shellRect.top;
-    const endX = (dstRect.left + dstRect.width / 2) - shellRect.left;
-    const endY = (dstRect.top + dstRect.height / 2) - shellRect.top;
+      const startX = (srcRect.left + srcRect.width / 2) - shellRect.left;
+      const startY = (srcRect.top + srcRect.height / 2) - shellRect.top;
+      const endX = (dstRect.left + dstRect.width / 2) - shellRect.left;
+      const endY = (dstRect.top + dstRect.height / 2) - shellRect.top;
 
-    const flyer = document.createElement('div');
-    flyer.className = 'flying-cat-mult';
-    flyer.style.left = `${startX}px`;
-    flyer.style.top = `${startY}px`;
-    flyer.style.transform = 'scale(1.25)';
-    flyer.innerHTML = `
-      <img class="fly-x" src="${NEKO_DIR}multiplier_x_tight.png" alt="x" draggable="false" />
-      <img class="fly-2" src="${NEKO_DIR}multiplier_2_tight.png" alt="2" draggable="false" />
-    `;
-    els.flyMultiplierLayer.appendChild(flyer);
+      // Quadratic Bezier control point for a natural lift & curved swoop into the Shrine
+      const dx = endX - startX;
+      const dy = endY - startY;
+      const curveDir = dx >= 0 ? -1 : 1;
+      const ctrlX = startX + dx * 0.36 + curveDir * Math.min(42, Math.max(18, Math.abs(dx) * 0.28));
+      const ctrlY = startY - Math.min(34, Math.max(14, Math.abs(dy) * 0.14));
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        flyer.style.left = `${endX}px`;
-        flyer.style.top = `${endY}px`;
-        flyer.style.transform = 'scale(0.95)';
-      });
+      // Mark the tile's static badge as launched so it seamlessly lifts off
+      sourceEl.classList.add('cat-badge-launched');
+      if (cellObj) cellObj._badgeLaunched = true;
+
+      const flyer = document.createElement('div');
+      flyer.className = 'flying-cat-mult';
+      flyer.style.transform = `translate3d(${startX.toFixed(1)}px, ${startY.toFixed(1)}px, 0) scale(1.05)`;
+      flyer.innerHTML = `
+        <img class="fly-x" src="${NEKO_DIR}multiplier_x_tight.png" alt="x" draggable="false" />
+        <img class="fly-2" src="${NEKO_DIR}multiplier_2_tight.png" alt="2" draggable="false" />
+      `;
+      els.flyMultiplierLayer.appendChild(flyer);
+
+      const duration = state.isTurbo ? 250 : 430;
+      const startTime = performance.now();
+      let lastSparkleTime = startTime;
+      let resolved = false;
+
+      function stepFrame(now) {
+        const rawT = Math.min(1, (now - startTime) / duration);
+        // Smooth ease-in-out with gravity acceleration into the shrine target
+        const t = rawT < 0.35
+          ? 1.8 * rawT * rawT
+          : 1 - Math.pow(1 - rawT, 2.15) * 0.88;
+        const clampedT = Math.min(1, Math.max(0, t));
+        const inv = 1 - clampedT;
+
+        const x = inv * inv * startX + 2 * inv * clampedT * ctrlX + clampedT * clampedT * endX;
+        const y = inv * inv * startY + 2 * inv * clampedT * ctrlY + clampedT * clampedT * endY;
+        const scale = 1.0 + Math.sin(clampedT * Math.PI) * 0.34;
+        const angle = Math.sin(clampedT * Math.PI * 1.5) * ( -curveDir * 8 );
+
+        flyer.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${scale.toFixed(3)}) rotate(${angle.toFixed(1)}deg)`;
+
+        // Emit golden sparkle trail particles along the curve (particle_sparkle in fly_multiplier_controller)
+        if (now - lastSparkleTime > (state.isTurbo ? 45 : 34) && rawT < 0.9) {
+          lastSparkleTime = now;
+          const dot = document.createElement('div');
+          dot.className = 'fly-sparkle-dot';
+          const jitterX = (Math.random() - 0.5) * 14;
+          const jitterY = (Math.random() - 0.5) * 10;
+          dot.style.setProperty('--sx', `${(x + jitterX).toFixed(1)}px`);
+          dot.style.setProperty('--sy', `${(y + jitterY).toFixed(1)}px`);
+          els.flyMultiplierLayer.appendChild(dot);
+          setTimeout(() => dot.remove(), 350);
+        }
+
+        if (rawT < 1) {
+          requestAnimationFrame(stepFrame);
+        } else {
+          if (!resolved) {
+            resolved = true;
+            resolve();
+          }
+          // Smooth absorption flash into #catBadge
+          flyer.style.transition = 'transform 0.11s ease-out, opacity 0.11s ease-out';
+          flyer.style.transform = `translate3d(${endX.toFixed(1)}px, ${endY.toFixed(1)}px, 0) scale(1.48)`;
+          flyer.style.opacity = '0';
+          setTimeout(() => flyer.remove(), 120);
+        }
+      }
+
+      requestAnimationFrame(stepFrame);
     });
-
-    setTimeout(() => {
-      flyer.remove();
-    }, 390);
   }
 
-  // Evaluate 6-Reel + 4-Cell Top Horizontal Reel Ways to Win
+  // Evaluate 6-Reel + 4-Cell Top Horizontal Reel Ways to Win (Exact Official PG Soft Formula)
   function evaluateWaysWin() {
     const symbolTypes = Object.keys(window.NekoTiles.SYMBOLS).filter(k => k !== 'scatter' && k !== 'wild');
     let baseWin = 0;
@@ -611,8 +686,10 @@
         if (payVal > 0) {
           const ways = countsPerCol.reduce((a, b) => a * b, 1);
           const currentBet = BET_OPTIONS[state.betIndex];
-          const betUnit = currentBet / 20;
-          const comboPayout = Math.round(ways * payVal * (betUnit / 20));
+          // Official PG Soft Lucky Neko (Base Bet 20):
+          // Symbol Win = Ways * Paytable Value * (Total Bet / 20)
+          const betPerLine = currentBet / 20;
+          const comboPayout = Math.round(ways * payVal * betPerLine);
 
           baseWin += comboPayout;
           winDetails.push({ symbol: symType, matchLength, ways, payout: comboPayout });
@@ -633,9 +710,9 @@
     };
   }
 
-  // Authentic PG Soft Cat Multiplier Sequence: Spawn on Neko tile -> Fly arc -> Reach shrine multiplier
+  // Authentic PG Soft Cat Multiplier Sequence: Spawn wobble on Neko tile -> Smooth curved flight -> Reach shrine multiplier
   async function checkAndApplyCatMultipliers(countedIds) {
-    const newCatSlots = [];
+    const newCatItems = [];
 
     // Check Top Horizontal Reel
     for (let i = 0; i < TOP_REEL_CELLS; i++) {
@@ -643,7 +720,7 @@
       if (cell && cell.type === 'neko' && !countedIds.has(cell.id)) {
         countedIds.add(cell.id);
         const slot = els.topReelBoard.children[i];
-        if (slot) newCatSlots.push(slot);
+        if (slot) newCatItems.push({ slot, cell });
       }
     }
 
@@ -654,29 +731,37 @@
         if (cell && cell.type === 'neko' && !countedIds.has(cell.id)) {
           countedIds.add(cell.id);
           const slot = els.reelCols[c].querySelector(`.neko-cell-slot[data-idx="${idx}"]`);
-          if (slot) newCatSlots.push(slot);
+          if (slot) newCatItems.push({ slot, cell });
         }
       });
     }
 
-    if (newCatSlots.length > 0) {
-      const isMultiple = newCatSlots.length > 1;
-      // 1. Spawn pulse on Neko tiles (symMultiSpawn)
+    if (newCatItems.length > 0) {
+      const isMultiple = newCatItems.length > 1;
+      // 1. Spawn wobble & golden pulse on Neko tiles (symMultiSpawn)
       window.MahjongSound.playCatSpawn();
-      newCatSlots.forEach(slot => slot.classList.add('cat-bounce'));
-      await sleep(130, 70);
+      newCatItems.forEach(({ slot }) => slot.classList.add('cat-bounce'));
+      await sleep(220, 110);
 
-      // 2. Launch flying x2 particles toward shrine (symMultiFly / symMultiFlyB)
+      // 2. Launch flying x2 particles along smooth GPU Bezier arc toward shrine (symMultiFly / symMultiFlyB)
       window.MahjongSound.playCatFly(isMultiple);
-      newCatSlots.forEach(slot => spawnFlyingMultiplierParticle(slot));
-      await sleep(340, 180);
+      const flightPromises = newCatItems.map(({ slot, cell }, index) => {
+        return new Promise(resolve => {
+          const staggerMs = index * (state.isTurbo ? 45 : 85);
+          setTimeout(async () => {
+            await spawnFlyingMultiplierParticle(slot, cell);
+            // 3. Each x2 particle increments the Shrine Multiplier right on impact!
+            state.catMultiplier += 2;
+            window.MahjongSound.playCatReach(isMultiple && index === newCatItems.length - 1);
+            updateDashboardUI();
+            highlightCatBadge();
+            resolve();
+          }, staggerMs);
+        });
+      });
 
-      // 3. Impact on shrine multiplier badge (symMultiReach / symMultiReachB)
-      state.catMultiplier += newCatSlots.length * 2;
-      window.MahjongSound.playCatReach(isMultiple);
-      updateDashboardUI();
-      highlightCatBadge();
-      await sleep(240, 120);
+      await Promise.all(flightPromises);
+      await sleep(180, 90);
     }
   }
 
@@ -829,6 +914,9 @@
     els.spinBtn.classList.remove('spinning-state');
     els.spinArrowImg.src = `${NEKO_DIR}sb_arrow_grey_tight.png`;
 
+    // Let the final reel column's landing bounce settle before launching Cat Multipliers
+    await sleep(160, 75);
+
     // Track counted Neko cat symbols during this spin's cascades
     const countedCatIds = new Set();
     await checkAndApplyCatMultipliers(countedCatIds);
@@ -846,6 +934,7 @@
       const stepWin = result.totalWin * activeMult;
       spinTotalWin += stepWin;
       state.balance += stepWin;
+      const cumulativePillWin = state.inFreeSpins ? (state.freeSpinsTotalWon + spinTotalWin) : spinTotalWin;
 
       // Activate black_tinter board dimmer & highlight winning cells
       setBoardWinDimmer(true);
@@ -859,10 +948,33 @@
       });
 
       window.MahjongSound.playCascadeWin(activeMult > 1);
-      showBannerWin(stepWin, false);
-      updateDashboardUI();
+      if (activeMult > 1) {
+        // Show base win briefly, then pulse Shrine Cat Multiplier into multiplied stepWin
+        showBannerWin(result.totalWin, false, cumulativePillWin - stepWin + result.totalWin);
+        updateDashboardUI();
+        await sleep(220, 100);
+        highlightCatBadge();
+        showBannerWin(stepWin, false, cumulativePillWin);
+        await sleep(430, 180);
+      } else {
+        showBannerWin(stepWin, false, cumulativePillWin);
+        updateDashboardUI();
+        await sleep(600, 250);
+      }
 
-      await sleep(620, 260);
+      // Record pre-shatter physical row/column positions so only tiles that actually move animate
+      state.topGrid.forEach((cell, idx) => {
+        if (cell) cell._oldIdx = idx;
+      });
+      for (let c = 0; c < COLS; c++) {
+        let rPos = 0;
+        (state.grid[c] || []).forEach(cell => {
+          if (cell) {
+            cell._oldRow = rPos;
+            rPos += (cell.span || 1);
+          }
+        });
+      }
 
       // Partition winning cells into Silver->Gold Roulette, Gold->Wild Morph, and Normal Shatter
       const silverRouletteItems = [];
@@ -878,12 +990,14 @@
           cell.type = REGULAR_TYPES[Math.floor(Math.random() * REGULAR_TYPES.length)];
           cell.silver = false;
           cell.gold = true;
+          cell._badgeLaunched = false;
           cell.id = Math.random().toString(36).slice(2, 9);
           silverRouletteItems.push({ slot, cell, span: cell.span || 1 });
         } else if (cell.gold && cell.type !== 'wild') {
           cell.type = 'wild';
           cell.gold = false;
           cell.silver = false;
+          cell._badgeLaunched = false;
           cell.id = Math.random().toString(36).slice(2, 9);
           goldToWildSlots.push({ slot, cell });
         } else {
@@ -928,37 +1042,68 @@
 
       setBoardWinDimmer(false);
 
-      // Refill Top Horizontal Reel (slides right-to-left)
+      // Refill Top Horizontal Reel (slides right-to-left by exact column delta)
       const topSurvivors = state.topGrid.filter(x => x !== null);
-      const topSurvivorCount = topSurvivors.length;
-      while (topSurvivors.length < TOP_REEL_CELLS) {
-        topSurvivors.push(createCell(null, 1));
+      const topShatteredCount = TOP_REEL_CELLS - topSurvivors.length;
+      if (topShatteredCount > 0) {
+        topSurvivors.forEach((cell, newIdx) => {
+          cell.slideCols = Math.max(0, (cell._oldIdx !== undefined ? cell._oldIdx : newIdx) - newIdx);
+        });
+        while (topSurvivors.length < TOP_REEL_CELLS) {
+          const newTopCell = createCell(null, 1, 'none', true);
+          newTopCell.slideCols = topShatteredCount;
+          topSurvivors.push(newTopCell);
+        }
+        state.topGrid = topSurvivors;
+        renderTopReel(false, true);
       }
-      state.topGrid = topSurvivors;
-      renderTopReel(false, topSurvivorCount < TOP_REEL_CELLS ? topSurvivorCount : -1);
 
-      // Refill Main 6 Columns so each column's spans sum to PLAYABLE_ROWS (5) with gravity drop animation
+      // Refill Main 6 Columns so each column's spans sum to PLAYABLE_ROWS (5) with exact physical dropRows
       for (let c = 0; c < COLS; c++) {
         const survivors = state.grid[c].filter(x => x !== null);
-        let usedRows = survivors.reduce((sum, cell) => sum + (cell.span || 1), 0);
-        let newCount = 0;
-        while (usedRows < PLAYABLE_ROWS) {
-          const rem = PLAYABLE_ROWS - usedRows;
-          let span = 1;
-          if (c >= 1 && c <= 4 && rem >= 2 && Math.random() < 0.35) {
-            span = 2;
+        const survivorRows = survivors.reduce((sum, cell) => sum + (cell.span || 1), 0);
+        const missingRows = PLAYABLE_ROWS - survivorRows;
+
+        if (missingRows > 0) {
+          let usedRows = survivorRows;
+          const newCells = [];
+          while (usedRows < PLAYABLE_ROWS) {
+            const rem = PLAYABLE_ROWS - usedRows;
+            let span = 1;
+            if (c >= 1 && c <= 4 && rem >= 2 && Math.random() < 0.35) {
+              span = 2;
+            }
+            const allowWild = c >= 1 && c <= 4;
+            const spawned = createCell(null, span, null, allowWild);
+            spawned.dropRows = missingRows;
+            newCells.unshift(spawned);
+            usedRows += span;
           }
-          survivors.unshift(createCell(null, span));
-          usedRows += span;
-          newCount++;
+
+          const combined = [...newCells, ...survivors];
+          let newRowCursor = 0;
+          combined.forEach(cell => {
+            if (cell._oldRow !== undefined) {
+              cell.dropRows = Math.max(0, newRowCursor - cell._oldRow);
+              delete cell._oldRow;
+            }
+            newRowCursor += (cell.span || 1);
+          });
+
+          state.grid[c] = combined;
+          renderMainColumnTrack(c, false, true);
+        } else {
+          // Column had no shattered cells (e.g. only Silver->Gold or Gold->Wild morph); clear temporary classes cleanly
+          state.grid[c].forEach(cell => {
+            cell.dropRows = 0;
+            delete cell._oldRow;
+          });
         }
-        state.grid[c] = survivors;
-        renderMainColumnTrack(c, false, newCount > 0 ? survivors.length : 0);
       }
 
       calculateAndRenderWays();
       window.MahjongSound.playTileCollapseImpact();
-      await sleep(340, 160);
+      await sleep(420, 210);
 
       // Check if any newly cascaded or roulette-revealed Neko symbols landed
       await checkAndApplyCatMultipliers(countedCatIds);
@@ -968,7 +1113,8 @@
 
     // Show Total Win on Infoboard if won
     if (spinTotalWin > 0) {
-      showBannerWin(spinTotalWin, true);
+      const finalPillWin = state.inFreeSpins ? (state.freeSpinsTotalWon + spinTotalWin) : spinTotalWin;
+      showBannerWin(spinTotalWin, true, finalPillWin);
       window.MahjongSound.playTotalWinInfobar(spinTotalWin >= currentBet * 5);
       state.history.unshift({
         time: new Date().toTimeString().slice(0, 8),
