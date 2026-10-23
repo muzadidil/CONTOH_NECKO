@@ -1,21 +1,22 @@
-/* Authentic PG Soft Mahjong Ways (1) Official Styling & Layout */
-/* Uses 100% genuine extracted PG Soft textures and sprite sheets */
+/* ==========================================================================
+   PG SOFT — LUCKY NEKO (GAME ID 89) AUTHENTIC 1:1 STYLESHEET
+   Uses 100% Genuine Sliced PG Soft Lucky Neko Texture Atlas Sprites
+   ========================================================================== */
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
   user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
 }
 
 html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #1a0604;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #12060c;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #ffffff;
 }
 
@@ -23,273 +24,450 @@ html, body {
   display: none !important;
 }
 
-/* Desktop Blurred PG Soft Backdrop (Matches screen_6s.png & after_mulai_1.png side bars) */
-.app-backdrop {
+/* Day vs Night (Free Spins) Mode Toggling */
+.lucky-neko-shell .night-only {
+  display: none !important;
+}
+.lucky-neko-shell.free-spin-active .day-only {
+  display: none !important;
+}
+.lucky-neko-shell.free-spin-active .night-only {
+  display: block !important;
+}
+
+/* ==========================================
+   0. PIN SECURITY LOCK SCREEN (DEFAULT: 8888)
+   ========================================== */
+.pin-lock-overlay {
   position: fixed;
   inset: 0;
-  background: #2b0905 url('../assets/pg_native/images/c3b4d774e6.d7383.jpg') center center / cover no-repeat;
+  z-index: 99999;
+  background: radial-gradient(circle at center, #2d1222 0%, #0d0409 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  padding: 20px;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
 }
-
-.app-backdrop::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(22px) brightness(0.68);
-  -webkit-backdrop-filter: blur(22px) brightness(0.68);
+.pin-lock-overlay.unlocked {
+  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
+.pin-card {
+  width: 100%;
+  max-width: 340px;
+  background: linear-gradient(180deg, rgba(58, 22, 42, 0.96) 0%, rgba(28, 9, 20, 0.98) 100%);
+  border: 1.5px solid rgba(255, 196, 107, 0.45);
+  border-radius: 22px;
+  padding: 26px 22px;
+  text-align: center;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.75), 0 0 25px rgba(233, 62, 123, 0.25);
+}
+.pin-card.shake {
+  animation: pinShake 0.4s ease;
+}
+@keyframes pinShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+.pin-icon-badge {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+.pin-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffe082;
+  margin-bottom: 4px;
+}
+.pin-subtitle {
+  font-size: 12px;
+  color: #d7b8c6;
+  margin-bottom: 18px;
+}
+.pin-dots-container {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.pin-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #ffb74d;
+  background: transparent;
+  transition: all 0.15s ease;
+}
+.pin-dot.filled {
+  background: #ff4f8b;
+  border-color: #ff80ab;
+  box-shadow: 0 0 10px #ff4f8b;
+}
+.pin-dot.error {
+  background: #ff1744;
+  border-color: #ff5252;
+}
+.pin-error-msg {
+  font-size: 12px;
+  color: #ff5252;
+  min-height: 18px;
+  opacity: 0;
+  margin-bottom: 10px;
+  transition: opacity 0.2s;
+}
+.pin-error-msg.show {
+  opacity: 1;
+}
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.pin-btn {
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 213, 128, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.pin-btn:active {
+  transform: scale(0.94);
+  background: rgba(233, 62, 123, 0.45);
+}
+.pin-btn.action-btn {
+  color: #ffcc80;
+  font-size: 16px;
+}
 
-/* Main PG Soft Portrait Container (Exact 9:16 mobile aspect ratio = 756:1344) */
-.game-shell {
-  position: relative;
-  height: 100dvh;
-  aspect-ratio: 9 / 16;
-  width: auto;
-  max-width: 100vw;
-  background: #0d3b26;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.92);
+/* ==========================================
+   APP BACKDROP & 9:16 PORTRAIT GAME SHELL
+   ========================================== */
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 35%, #381529 0%, #14060d 75%, #090205 100%);
   overflow: hidden;
+}
+
+.lucky-neko-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vh * 9 / 16);
+  max-height: 100vh;
+  aspect-ratio: 9 / 16;
+  background: #2b1318;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  z-index: 2;
 }
 
-/* Screen Shake on Big Cascades */
-.game-shell.screen-shake {
-  animation: boardShake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+@media (max-aspect-ratio: 9/16) {
+  .lucky-neko-shell {
+    max-width: 100vw;
+    max-height: 100vh;
+    aspect-ratio: auto;
+  }
 }
 
-@keyframes boardShake {
-  0%, 100% { transform: translate(0, 0); }
-  20% { transform: translate(-4px, 3px); }
-  40% { transform: translate(4px, -3px); }
-  60% { transform: translate(-3px, -2px); }
-  80% { transform: translate(3px, 2px); }
-}
-
-/* =========================================================
-   1. OFFICIAL PG SOFT SPLASH & LOADING SCREEN
-   Matches screen_6s.png & game_25s.png 1:1
-   ========================================================= */
+/* ==========================================
+   1. OFFICIAL PG SOFT LUCKY NEKO SPLASH SCREEN
+   ========================================== */
 .splash-overlay {
   position: absolute;
   inset: 0;
-  z-index: 200;
-  background: #240504 url('../assets/pg_native/images/c3b4d774e6.d7383.jpg') center top / 100% 100% no-repeat;
+  z-index: 500;
+  background: #2b0918;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 20px 10px;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
 }
-
 .splash-overlay.fade-out {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
-
-.splash-center-cta {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-/* Red Progress Bar State (screen_6s.png) */
-.pg-load-area {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.pg-progress-track {
-  width: 69%;
-  height: 18px;
-  background: #0d0d0d;
-  border-radius: 5px;
-  border: 1.5px solid #000000;
-  padding: 2px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
-  overflow: hidden;
-}
-
-.pg-progress-fill {
-  width: 20%;
-  height: 100%;
-  border-radius: 3px;
-  background: repeating-linear-gradient(
-    -55deg,
-    #eb1e2c 0px,
-    #eb1e2c 10px,
-    #ff4f5e 10px,
-    #ff4f5e 20px
-  );
-  position: relative;
-  transition: width 0.16s ease;
-}
-
-.pg-progress-fill::after {
-  content: '';
+.splash-bg-img {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 18px;
-  background: linear-gradient(90deg, transparent, #ffffff);
-  border-radius: 0 3px 3px 0;
-}
-
-.pg-load-status {
-  margin-top: 8px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
-}
-
-.pg-load-tip {
-  margin-top: 22px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1.38;
-  max-width: 92%;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
-}
-
-/* Glossy Red MULAI Button (game_25s.png) */
-.pg-mulai-btn {
-  position: relative;
-  top: 36px;
-  width: 168px;
-  height: 46px;
-  border-radius: 8px;
-  border: 1.5px solid rgba(255, 190, 190, 0.75);
-  background: linear-gradient(180deg, #ff7a82 0%, #f02c37 48%, #d61b26 100%);
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.75),
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.6);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
-  transition: transform 0.1s ease, filter 0.15s ease;
-  margin-bottom: 12px;
-}
-
-.pg-mulai-btn:hover {
-  filter: brightness(1.08);
-}
-
-.pg-mulai-btn:active {
-  transform: scale(0.95);
-}
-
-/* Official Splash Footer (PG Soft + MGA + BMM) */
-.splash-footer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.splash-cert-row {
-  width: 92%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.pg-pixel-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex-shrink: 0;
-}
-
-.pg-pixel-text {
-  font-size: 32px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  line-height: 0.95;
-  background: linear-gradient(90deg, #ff5252 0%, #ffeb3b 35%, #4caf50 70%, #29b6f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.8));
-}
-
-.pg-pixel-sub {
-  font-size: 6.5px;
-  font-weight: 800;
-  letter-spacing: 0.7px;
-  color: #e0e0e0;
-  margin-top: 3px;
-}
-
-.splash-cert-img {
-  height: 44px;
-  width: auto;
-  object-fit: contain;
-  opacity: 0.92;
-}
-
-.splash-copyright {
-  font-size: 8.5px;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.3px;
-  text-align: center;
-}
-
-/* =========================================================
-   2. OFFICIAL PG SOFT TOP WOODEN HEADER
-   Matches after_mulai_1.png 1:1
-   ========================================================= */
-.pg-top-header {
-  position: relative;
-  width: 100%;
-  height: 17.5%;
-  flex-shrink: 0;
-  z-index: 20;
-  overflow: visible;
-}
-
-.hdr-bg-wood {
-  position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   z-index: 1;
 }
 
-/* 1024 CARA Terracotta Bar */
-.hdr-ways-bar {
+/* Glossy Pink MULAI Button (Matches live_25s.png 1:1) */
+.splash-center-cta {
   position: absolute;
-  top: 8%;
-  left: 0;
-  width: 100%;
-  height: 48%;
-  z-index: 2;
+  top: 75.3%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42.5%;
+  height: 5.2%;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.pg-mulai-btn {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  border: 2px solid #ff9ebb;
+  background: linear-gradient(180deg, #f57d9a 0%, #e4466f 48%, #d22f58 100%);
+  box-shadow: 0 4px 12px rgba(120, 10, 42, 0.65), inset 0 2px 2px rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  font-size: clamp(15px, 2.3vh, 20px);
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+.pg-mulai-btn:hover {
+  filter: brightness(1.07);
+}
+.pg-mulai-btn:active {
+  transform: scale(0.96);
+}
 
+/* Pink Striped Loading Bar (Matches live_6s.png 1:1) */
+.splash-progress-container {
+  position: absolute;
+  top: 74.3%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.splash-progress-track {
+  width: 67%;
+  height: 17px;
+  background: #0c0709;
+  border-radius: 999px;
+  padding: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7), inset 0 1px 3px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  position: relative;
+}
+.splash-progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at right center, #ffffff 0%, rgba(255, 255, 255, 0.85) 8px, transparent 18px),
+    repeating-linear-gradient(
+      -55deg,
+      #ec407a 0px,
+      #ec407a 8px,
+      #f46896 8px,
+      #f46896 16px
+    );
+  box-shadow: 0 0 10px rgba(255, 105, 160, 0.9);
+  transition: width 0.14s ease-out;
+}
+.splash-progress-text {
+  margin-top: 7px;
+  font-size: clamp(12px, 1.75vh, 15px);
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+.pg-load-tip {
+  margin-top: 16px;
+  font-size: clamp(11px, 1.55vh, 14px);
+  line-height: 1.35;
+  color: #f5eef0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  max-width: 96%;
+}
+
+/* Official PG Soft / MGA / BMM Footer at Bottom of Splash */
+.splash-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 11.5%;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(44, 9, 23, 0) 0%, rgba(36, 7, 19, 0.92) 35%, #230612 100%);
+}
+.splash-footer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+/* ==========================================
+   2. TOP TEMPLE ROOF, SAKURA TREES, WAYS BAR & 4-CELL TOP REEL
+   (0% to 15.8% of 9:16 Game Shell)
+   ========================================== */
+.neko-top-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15.8%;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.temple-roof-bg {
+  position: absolute;
+  top: -66%;
+  left: 0;
+  width: 100%;
+  height: 168%;
+  object-fit: fill;
+  z-index: 1;
+}
+
+.sakura-tree {
+  position: absolute;
+  top: -12%;
+  width: 31%;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+  animation: treeSway 5s ease-in-out infinite alternate;
+}
+.sakura-tree.tree-left {
+  left: -3%;
+  transform-origin: top left;
+}
+.sakura-tree.tree-right {
+  right: -3%;
+  width: 29%;
+  transform-origin: top right;
+}
+@keyframes treeSway {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(1.2deg) scale(1.015); }
+}
+
+/* Falling Sakura Petals */
+.sakura-petals-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 350%;
+  overflow: hidden;
+  z-index: 15;
+  pointer-events: none;
+}
+.sakura-petal {
+  position: absolute;
+  top: -20px;
+  width: 11px;
+  height: 8px;
+  background: radial-gradient(circle, #ffc1da 20%, #ff85b3 100%);
+  border-radius: 70% 30% 70% 30%;
+  opacity: 0.82;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall {
+  0% {
+    transform: translate3d(0, -10px, 0) rotate(0deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(65px, 480px, 0) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+/* Demo Feature Trigger Trophy Button */
+.hdr-trophy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 110, 0.45);
+  background: rgba(25, 8, 16, 0.65);
+  color: #ffe082;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 60;
+  pointer-events: auto;
+  opacity: 0.75;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.hdr-trophy-btn:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+.demo-popup-menu {
+  position: absolute;
+  top: 42px;
+  right: 8px;
+  background: rgba(28, 10, 18, 0.96);
+  border: 1.5px solid #ffd54f;
+  border-radius: 12px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 100;
+  pointer-events: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+}
+.demo-popup-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 213, 79, 0.25);
+  border-radius: 8px;
+  color: #fff3e0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 10px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.demo-popup-item:hover {
+  background: rgba(233, 62, 123, 0.45);
+}
+
+/* Ways Plaque (10800 CARA) */
+.ways-plaque-holder {
+  position: absolute;
+  top: 15.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 43%;
+  height: 29.5%;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .ways-bar-bg {
   position: absolute;
   inset: 0;
@@ -297,804 +475,840 @@ html, body {
   height: 100%;
   object-fit: fill;
 }
-
-.ways-bar-text {
+.ways-sprites-box {
   position: relative;
-  z-index: 3;
-  height: 36%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 62%;
+  padding: 0 8px;
+}
+.ways-digits-group {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  height: 100%;
+}
+.ways-digit-sp {
+  height: 78%;
   width: auto;
-  margin-top: -2px;
-  opacity: 0.88;
+  object-fit: contain;
+}
+.ways-cara-sp {
+  height: 76%;
+  width: auto;
+  object-fit: contain;
+  margin-left: 3px;
 }
 
-/* Multiplier Wooden / Red Bar (x1 x2 x3 x5 / x2 x4 x6 x10) */
-.hdr-mult-bar {
+/* 4-Cell Top Horizontal Reel (Above Columns 2, 3, 4, 5) */
+.top-horizontal-reel-wrapper {
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 66.4%;
+  height: 51.5%;
+  z-index: 5;
+  pointer-events: auto;
+}
+.top-reel-backplate {
+  position: absolute;
+  inset: 2% 1%;
+  width: 98%;
+  height: 96%;
+  object-fit: fill;
+  z-index: 1;
+}
+.top-reel-mask {
+  position: absolute;
+  inset: 4% 1.4%;
+  width: 97.2%;
+  height: 92%;
+  overflow: hidden;
+  z-index: 2;
+}
+.top-reel-board {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  transition: transform 0.18s ease-out;
+}
+.top-reel-board.top-spinning {
+  animation: topHorizontalScroll 0.16s linear infinite;
+}
+@keyframes topHorizontalScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-25%); }
+}
+.top-cell-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  cursor: pointer;
+}
+.top-reel-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ==========================================
+   3. MAIN 6-COLUMN X 5-ROW REEL BOARD
+   (15.8% to 55.2% of 9:16 Game Shell)
+   ========================================== */
+.main-reel-section {
+  position: absolute;
+  top: 15.8%;
+  left: 0;
+  width: 100%;
+  height: 39.4%;
+  z-index: 15;
+}
+.main-reel-backplate {
+  position: absolute;
+  inset: 1.5% 0.6%;
+  width: 98.8%;
+  height: 97%;
+  object-fit: fill;
+  z-index: 1;
+}
+.main-reel-mask {
+  position: absolute;
+  top: 2.3%;
+  left: 1.1%;
+  width: 97.8%;
+  height: 95.4%;
+  overflow: hidden;
+  z-index: 2;
+}
+.neko-reel-board {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+}
+.neko-reel-col {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.neko-reel-track {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.neko-reel-col.reel-spinning .neko-reel-track {
+  animation: mainReelScroll 0.15s linear infinite;
+}
+@keyframes mainReelScroll {
+  0% { transform: translateY(-12%); }
+  100% { transform: translateY(12%); }
+}
+
+/* Individual Cell Slot (Supports 1x1, 1x2, 1x3, 1x4 Multi-Row Spans) */
+.neko-cell-slot {
+  position: relative;
+  width: 100%;
+  height: 20%;
+  flex: 1 0 20%;
+  overflow: visible;
+  cursor: pointer;
+}
+.neko-cell-slot.span-1 { height: 20%; flex: 1 0 20%; }
+.neko-cell-slot.span-2 { height: 40%; flex: 2 0 40%; }
+.neko-cell-slot.span-3 { height: 60%; flex: 3 0 60%; }
+.neko-cell-slot.span-4 { height: 80%; flex: 4 0 80%; }
+
+.main-reel-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ==========================================
+   AUTHENTIC LAYERED TILE RENDERING
+   ========================================== */
+.neko-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+/* Colored Tile Block Background (Edge-to-Edge) */
+.neko-tile-block {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 1;
+}
+
+/* Symbol Glyph Overlay */
+.neko-glyph {
+  position: relative;
+  z-index: 2;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+.neko-glyph.low-glyph {
+  width: 64%;
+  height: 64%;
+}
+.neko-glyph.high-glyph {
+  width: 88%;
+  height: 88%;
+}
+.neko-tile.span-b .neko-glyph.high-glyph,
+.neko-tile.span-c .neko-glyph.high-glyph,
+.neko-tile.span-d .neko-glyph.high-glyph {
+  width: 92%;
+  height: 78%;
+  align-self: flex-end;
+  margin-bottom: 4%;
+}
+.neko-tile.span-b .neko-glyph.low-glyph,
+.neko-tile.span-c .neko-glyph.low-glyph,
+.neko-tile.span-d .neko-glyph.low-glyph {
+  width: 72%;
+  height: 55%;
+}
+
+/* Silver & Gold Frame Borders (Wilds-on-the-Way) */
+.neko-tile-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Wild & Scatter Full-Bleed Special Tiles */
+.neko-special-full {
+  position: absolute;
+  width: 106%;
+  height: 106%;
+  left: -3%;
+  top: -3%;
+  object-fit: fill;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Lucky Neko Cat x2 Multiplier Badge on Tile */
+.neko-cat-mult-badge {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.75));
+}
+.neko-cat-mult-badge .mult-x-ic {
+  height: 15px;
+  width: auto;
+  margin-right: -2px;
+}
+.neko-cat-mult-badge .mult-2-ic {
+  height: 19px;
+  width: auto;
+}
+
+/* Winning & Cat Bounce Animations */
+.winning-cell .neko-tile {
+  animation: winTilePulse 0.36s ease-in-out infinite alternate;
+  z-index: 10;
+}
+.winning-cell .neko-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2.5px solid #fff59d;
+  box-shadow: 0 0 16px #ffd54f, inset 0 0 12px rgba(255, 235, 59, 0.65);
+  z-index: 6;
+  pointer-events: none;
+}
+@keyframes winTilePulse {
+  0% { transform: scale(1); filter: brightness(1.05); }
+  100% { transform: scale(1.07); filter: brightness(1.3); }
+}
+
+.cat-bounce .neko-tile {
+  animation: catBoostBounce 0.55s cubic-bezier(0.28, 0.84, 0.42, 1);
+  z-index: 12;
+}
+@keyframes catBoostBounce {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.22); filter: brightness(1.35) drop-shadow(0 0 14px #ffd54f); }
+  100% { transform: scale(1); }
+}
+
+/* Symbol Tap Payout Inspection Popup */
+.symbol-payout-popup {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.symbol-payout-card {
+  position: relative;
+  width: 68%;
+  max-width: 270px;
+  background: url('../assets/sprites/neko/ui_payout_a_tight.png') no-repeat center / 100% 100%;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #4e260e;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.75));
+}
+.payout-popup-sym {
+  width: 74px;
+  height: 74px;
+  position: relative;
+  flex-shrink: 0;
+}
+.payout-popup-table {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #5d2b0c;
+}
+.payout-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+.payout-row span:first-child {
+  color: #a84314;
+}
+
+/* ==========================================
+   4. SHRINE MID-SECTION: ROPE, INFOBOARD, CAT MULTIPLIER & BELI FITUR
+   (55.2% to 76.5% of 9:16 Game Shell)
+   ========================================== */
+.shrine-mid-section {
+  position: absolute;
+  top: 55.2%;
+  left: 0;
+  width: 100%;
+  height: 21.3%;
+  z-index: 12;
+  overflow: visible;
+}
+
+.shrine-btm-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 1;
+}
+.shrine-btm-light {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 2;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Hanging Red Lanterns in Free Spins */
+.shrine-lantern {
+  position: absolute;
+  top: -4%;
+  width: 14%;
+  height: auto;
+  z-index: 5;
+  pointer-events: none;
+  animation: lanternSwing 3.2s ease-in-out infinite alternate;
+}
+.shrine-lantern.lantern-left {
+  left: 2%;
+  transform: scaleX(-1);
+}
+.shrine-lantern.lantern-right {
+  right: 2%;
+}
+@keyframes lanternSwing {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* 6 White Paper Shide Streamers (Matches after_mulai_1.png & scene_tree.json) */
+.shide-streamer {
+  position: absolute;
+  width: 6.8%;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+  transform-origin: top center;
+  animation: shideSway 2.8s ease-in-out infinite alternate;
+}
+.shide-streamer.s1 { left: 3.2%; top: 4%; }
+.shide-streamer.s2 { left: 20.2%; top: 10%; animation-delay: 0.3s; }
+.shide-streamer.s3 { left: 37.0%; top: 13%; animation-delay: 0.6s; }
+.shide-streamer.s4 { right: 37.0%; top: 13%; animation-delay: 0.2s; }
+.shide-streamer.s5 { right: 20.2%; top: 10%; animation-delay: 0.5s; }
+.shide-streamer.s6 { right: 3.2%; top: 4%; animation-delay: 0.8s; }
+@keyframes shideSway {
+  0% { transform: rotate(-2deg); }
+  100% { transform: rotate(2.5deg); }
+}
+
+/* Shimenawa Twisted Rope Across Bottom of Reels */
+.shimenawa-rope-top {
+  position: absolute;
+  top: -7%;
+  left: 0;
+  width: 100%;
+  height: 36%;
+  object-fit: fill;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* Infoboard Wooden Marquee Banner */
+.infoboard-holder {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 76%;
+  height: 36%;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.infoboard-holder.win-mode {
+  width: 84%;
+}
+.ib-bar-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 1;
+}
+.ib-mask {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 11%;
+  object-fit: fill;
+  z-index: 4;
+  pointer-events: none;
+}
+.ib-mask.mask-left {
+  left: 0;
+}
+.ib-mask.mask-right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+/* Idle Scrolling Tip Sprite inside Infoboard */
+.ib-tip-marquee {
+  position: relative;
+  width: 82%;
+  height: 62%;
+  overflow: hidden;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+.ib-tip-sprite {
+  height: 76%;
+  width: auto;
+  object-fit: contain;
+  animation: infoboardMarquee 9s linear infinite;
+}
+@keyframes infoboardMarquee {
+  0% { transform: translateX(35%); }
+  100% { transform: translateX(-105%); }
+}
+
+/* Win Amount Sprite Display inside Infoboard */
+.ib-win-display {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 70%;
+  padding: 0 14px;
+}
+.ib-win-tag {
+  height: 72%;
+  width: auto;
+  object-fit: contain;
+}
+.ib-win-sprites {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 64%;
+}
+.info-curr-rp {
+  font-size: clamp(13px, 2vh, 17px);
+  font-weight: 900;
+  color: #fff3c4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  margin-right: 3px;
+  line-height: 1;
+  align-self: center;
+}
+.info-num-sp {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+.info-sep-sp {
+  height: 32%;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 1px;
+}
+
+/* Shrine Lower Bar: Cat Multiplier Plaque & BELI FITUR Button */
+.shrine-lower-bar {
+  position: absolute;
+  bottom: 2%;
+  left: 0;
+  width: 100%;
+  height: 56%;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Cat Multiplier Shrine Display */
+.shrine-cat-multiplier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(62, 18, 12, 0.85) 0%, rgba(28, 7, 5, 0.92) 100%);
+  border: 1.5px solid rgba(255, 202, 40, 0.65);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.shrine-cat-multiplier.active,
+.lucky-neko-shell.free-spin-active .shrine-cat-multiplier {
+  opacity: 1;
+  transform: scale(1);
+}
+.shrine-cat-multiplier.glowing {
+  animation: shrineMultPulse 0.45s ease 2;
+  box-shadow: 0 0 22px #ffd54f;
+}
+@keyframes shrineMultPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+.shrine-cat-ic {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+.shrine-cat-mult-sprites {
+  display: flex;
+  align-items: center;
+  height: 28px;
+}
+.shrine-mult-x {
+  height: 20px;
+  width: auto;
+}
+.shrine-mult-digit {
+  height: 26px;
+  width: auto;
+}
+
+/* Authentic BELI FITUR Signboard Button (Right Side) */
+.feature-buy-btn {
+  position: absolute;
+  right: 1.5%;
+  bottom: 4%;
+  width: 32%;
+  aspect-ratio: 363 / 159;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+.lucky-neko-shell.free-spin-active .feature-buy-btn {
+  display: none;
+}
+.feature-buy-btn:hover {
+  filter: brightness(1.08);
+}
+.feature-buy-btn:active {
+  transform: scale(0.95);
+}
+.fb-btn-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.fb-btn-txt {
+  position: relative;
+  z-index: 2;
+  width: 76%;
+  height: auto;
+  object-fit: contain;
+  margin-top: -12%;
+}
+
+/* ==========================================
+   5. BOTTOM WALLET BAR, WOODEN CONTROL PANEL & KOI POND FOOTER
+   (76.5% to 100% of 9:16 Game Shell)
+   ========================================== */
+.game-footer {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 46%;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mult-bar-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-}
-
-.mult-bar-bg.bonus-bg {
-  display: none;
-}
-
-.game-shell.freespin-mode .mult-bar-bg.normal-bg {
-  display: none;
-}
-
-.game-shell.freespin-mode .mult-bar-bg.bonus-bg {
-  display: block;
-}
-
-.mult-slots {
-  position: relative;
-  z-index: 5;
-  width: 72%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: center;
-  justify-items: center;
-  margin-left: 14px;
-  margin-top: -2px;
-}
-
-.mult-slot {
-  position: relative;
-  width: 100%;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mult-img-inactive {
-  height: 31px;
-  width: auto;
-  object-fit: contain;
-  display: block;
-}
-
-.mult-img-active {
-  position: absolute;
-  height: 46px;
-  width: auto;
-  object-fit: contain;
-  display: none;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.9));
-  animation: multPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.mult-slot.active .mult-img-inactive {
-  display: none;
-}
-
-.mult-slot.active .mult-img-active {
-  display: block;
-}
-
-@keyframes multPop {
-  0% { transform: scale(0.75); }
-  100% { transform: scale(1.06); }
-}
-
-/* Top-Right Golden Trophy / Quick Demo Trigger */
-.hdr-trophy-btn {
-  position: absolute;
-  top: 24px;
-  right: 10px;
-  z-index: 10;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 215, 0, 0.65);
-  background: radial-gradient(circle at 35% 30%, #4a3525 0%, #1f140d 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.75);
-}
-
-.hdr-trophy-btn .trophy-icon {
-  font-size: 18px;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
-}
-
-.hdr-trophy-btn .trophy-dot {
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #ff2a2a;
-  border: 1px solid #fff;
-}
-
-.demo-popup-menu {
-  position: absolute;
-  top: 62px;
-  right: 10px;
-  z-index: 50;
-  background: rgba(24, 12, 8, 0.96);
-  border: 1.5px solid #f5b942;
-  border-radius: 10px;
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
-}
-
-.demo-popup-item {
-  background: linear-gradient(180deg, #4a1c10, #290d06);
-  border: 1px solid rgba(245, 185, 66, 0.45);
-  color: #ffe8a3;
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-}
-
-.demo-popup-item:hover {
-  background: linear-gradient(180deg, #f5b942, #b87700);
-  color: #1f0800;
-}
-
-/* =========================================================
-   3. OFFICIAL PG SOFT 5-REEL GREEN FELT BOARD
-   Matches after_mulai_1.png 1:1
-   Notice in after_mulai_1.png:
-   - Green felt background (`reel_a.png`)
-   - 5 columns packed edge-to-edge horizontally
-   - Staggered vertical alignment: cols 1 & 3 sit slightly higher than cols 0, 2, 4, with top and bottom peeking tiles!
-   ========================================================= */
-.reel-stage-wrapper {
-  position: relative;
-  flex: 1;
-  width: 100%;
-  overflow: hidden;
-  background: #1d6328 url('../assets/sprites/reel_a.png') center center / 100% 100% no-repeat;
-  z-index: 10;
-}
-
-.reel-board-frame {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 0 3.2%;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0px;
-  overflow: hidden;
-}
-
-.reel-column {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* Authentic PG Soft Mahjong Ways 1 Staggered Reel Offset (see after_mulai_1.png):
-   Reels 2 & 4 (data-col 1 & 3) are shifted slightly up relative to Reels 1, 3, 5! */
-.reel-column.col-inner {
-  transform: translateY(-1.4%);
-}
-
-/* Scatter Anticipation Fire Column Glow */
-.reel-column.anticipation-glow::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 2.5px solid #ffcf33;
-  box-shadow: inset 0 0 28px rgba(255, 166, 0, 0.85), 0 0 24px rgba(255, 200, 0, 0.9);
-  pointer-events: none;
-  z-index: 15;
-  animation: anticipationPulse 0.22s ease-in-out infinite alternate;
-}
-
-@keyframes anticipationPulse {
-  from { opacity: 0.65; }
-  to { opacity: 1; }
-}
-
-/* Tile Cells (Top Peek + 4 Playable Rows + Bottom Peek)
-   Locked to exact 162:190 aspect ratio and stretched 100% edge-to-edge so there is ZERO horizontal gap! */
-.tile-cell {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 162 / 190;
-  height: auto;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: -1.5% 0;
-  transition: filter 0.16s ease, transform 0.16s ease;
-}
-
-.tile-cell.peek-top {
-  aspect-ratio: auto;
-  height: 9%;
-  margin-top: -4%;
-  pointer-events: none;
-  overflow: hidden;
-  align-items: flex-end;
-}
-
-.tile-cell.peek-bottom {
-  aspect-ratio: auto;
-  height: 9%;
-  margin-bottom: -4%;
-  pointer-events: none;
-  overflow: hidden;
-  align-items: flex-start;
-}
-
-.tile-cell.peek-top .pg-tile,
-.tile-cell.peek-bottom .pg-tile {
-  width: 100%;
-  aspect-ratio: 162 / 190;
-  height: auto;
-}
-
-/* Dim non-winning tiles during win highlight */
-.reel-board-frame.has-active-win .tile-cell:not(.winning) {
-  filter: brightness(0.48);
-}
-
-/* Composite PG Soft Sprite Tile */
-.pg-tile {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pg-tile .tile-layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  pointer-events: none;
-}
-
-.pg-tile .tile-base {
-  z-index: 1;
-  transform: scale(1.015);
-}
-
-.pg-tile .tile-glyph {
-  z-index: 2;
-  transform: scale(1.01);
-}
-
-/* Small golden sycee ingot emblem at bottom center of gold-plated tiles (see after_mulai_1.png!) */
-.pg-tile .gold-ingot-badge {
-  z-index: 3;
-  inset: auto;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 28%;
-  height: auto;
-}
-
-/* Wild Tile Layers (see after_mulai_1.png col 2 row 0 & row 3) */
-.pg-tile-wild .base-ingot {
-  z-index: 2;
-  transform: translateY(10%) scale(1.02);
-}
-
-.pg-tile-wild .sym-wild {
-  z-index: 3;
-  transform: translateY(-4%) scale(1.04);
-}
-
-/* Scatter Tile Layers (see after_mulai_1.png col 1 row 2 & col 3 row 1) */
-.tile-cell.has-scatter {
-  z-index: 8;
-}
-
-.pg-tile-scatter .scatter-bg-glow {
-  z-index: 1;
-  transform: scale(1.36);
-}
-
-.pg-tile-scatter .sym-scatter {
-  z-index: 3;
-  transform: scale(1.12);
-}
-
-/* Authentic PG Soft Reel Spin & Cascade Animations (Normal Relaxed Mode vs. Turbo Fast Mode) */
-.tile-cell {
-  will-change: transform, opacity;
-}
-
-.tile-cell.spin-windup {
-  animation: pgSpinWindup 0.14s cubic-bezier(0.33, 1, 0.68, 1) forwards;
-}
-
-@keyframes pgSpinWindup {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-20%); }
-}
-
-/* Continuous Conveyor Reel Scroll Strip during Spinning */
-.reel-scroll-strip {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  will-change: transform;
-  animation: pgReelStripFlow 0.28s linear infinite;
-}
-
-.game-shell.turbo-mode .reel-scroll-strip {
-  animation: pgReelStripFlow 0.14s linear infinite;
-}
-
-@keyframes pgReelStripFlow {
-  0% { transform: translateY(-50%); }
-  100% { transform: translateY(0%); }
-}
-
-/* Smooth Column Stop Landing with PG Soft BounceBackStopScroller Physics */
-.tile-cell.reel-stop-land {
-  animation: pgReelStopLand 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.game-shell.turbo-mode .tile-cell.reel-stop-land {
-  animation: pgReelStopLand 0.17s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes pgReelStopLand {
-  0% { transform: translateY(-135%); }
-  68% { transform: translateY(8%); }
-  86% { transform: translateY(-2%); }
-  100% { transform: translateY(0); }
-}
-
-/* Selective Per-Tile Gravity Drop (ShiftSlotHandler) using --drop-rows CSS variable */
-.tile-cell.cascade-shift {
-  animation: pgCascadeGravity var(--drop-dur, 0.42s) cubic-bezier(0.32, 0, 0.67, 0) var(--drop-delay, 0ms) both;
-}
-
-@keyframes pgCascadeGravity {
-  0% {
-    transform: translateY(calc(var(--drop-rows, 1) * -100%));
-  }
-  72% {
-    transform: translateY(0%);
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  86% {
-    transform: translateY(-5%);
-    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
-  }
-  100% {
-    transform: translateY(0%);
-  }
-}
-
-/* Winning Tile Highlight (Relaxed Pulse in Normal Mode) */
-.tile-cell.winning {
-  z-index: 12;
-  filter: brightness(1.16) drop-shadow(0 0 14px #ffd700) !important;
-  animation: pgWinPulse 0.42s ease-in-out infinite alternate;
-}
-
-.game-shell.turbo-mode .tile-cell.winning {
-  animation: pgWinPulse 0.22s ease-in-out infinite alternate;
-}
-
-@keyframes pgWinPulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
-}
-
-/* Tile Shatter / Rotate Collapse */
-.tile-cell.exploding {
-  animation: pgTileShrink 0.44s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
-}
-
-.game-shell.turbo-mode .tile-cell.exploding {
-  animation: pgTileShrink 0.2s ease-in forwards;
-}
-
-@keyframes pgTileShrink {
-  0% { transform: scale(1.06) rotateY(0deg); opacity: 1; filter: brightness(1.8); }
-  45% { transform: scale(1.12) rotateY(90deg); opacity: 0.9; filter: brightness(2.2); }
-  100% { transform: scale(0.08) rotateY(180deg); opacity: 0; }
-}
-
-/* Gold Tile Morphing into Wild Ingot */
-.tile-cell.morphing-wild {
-  z-index: 14;
-  animation: pgMorphWild 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.game-shell.turbo-mode .tile-cell.morphing-wild {
-  animation: pgMorphWild 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes pgMorphWild {
-  0% { transform: scale(1.1) rotateY(0deg); filter: brightness(2.2); }
-  50% { transform: scale(1.24) rotateY(90deg); filter: brightness(2.5); }
-  100% { transform: scale(1) rotateY(0deg); filter: brightness(1); }
-}
-
-/* Particle Canvas Overlay */
-.fx-canvas-overlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  height: 23.5%;
   z-index: 25;
 }
 
-/* Single Tile Payout Popup (when user taps a tile on the board) */
-.tile-payout-popup {
-  position: absolute;
-  inset: 0;
-  z-index: 35;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tpp-card {
-  background: url('../assets/pg_native/images/atlas_57_253x141.png') center center / 100% 100% no-repeat;
-  width: 220px;
-  height: 126px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.85);
-}
-
-.tpp-card .tpp-tile {
-  width: 74px;
-  height: 88px;
-  position: relative;
-}
-
-.tpp-card .tpp-pays {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 14px;
-  font-weight: 900;
-  color: #ffffff;
-  text-shadow: 0 1px 3px #000;
-}
-
-.tpp-card .tpp-pays span em {
-  font-style: normal;
-  color: #ffd54f;
-  margin-right: 8px;
-}
-
-/* =========================================================
-   4. OFFICIAL PG SOFT WOODEN BOTTOM DASHBOARD
-   Matches after_mulai_1.png 1:1
-   ========================================================= */
-.pg-bottom-dashboard {
-  position: relative;
-  width: 100%;
-  height: 29.5%;
-  flex-shrink: 0;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5% 0 1%;
-}
-
-.btm-bg-wood {
+.footer-wood-bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   z-index: 1;
 }
 
-.btm-bg-wood.bonus-btm-bg {
-  display: none;
-}
-
-.game-shell.freespin-mode .btm-bg-wood.normal-btm-bg {
-  display: none;
-}
-
-.game-shell.freespin-mode .btm-bg-wood.bonus-btm-bg {
-  display: block;
-}
-
-.btm-top-rim {
+/* Koi Pond Lilypads at Very Bottom */
+.koi-pond-decor {
   position: absolute;
-  top: -4px;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 52px;
-  object-fit: fill;
+  height: 18%;
   z-index: 2;
   pointer-events: none;
+  overflow: hidden;
 }
-
-/* Ornate Red & Gold Chinese Knot Marquee Banner */
-.pg-infoboard-wrap {
-  position: relative;
-  z-index: 5;
-  width: 92%;
-  height: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.infoboard-frame {
+.pond-lily {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  pointer-events: none;
-}
-
-.infoboard-Viewport {
-  position: relative;
-  z-index: 2;
-  width: 73%;
-  height: 70%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.infoboard-sprite-ticker {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.infoboard-sprite-ticker img {
-  height: 76%;
-  width: auto;
-  max-width: none;
-  animation: pgMarqueeScroll 8.5s linear infinite;
-}
-
-@keyframes pgMarqueeScroll {
-  0% { transform: translateX(35%); }
-  100% { transform: translateX(-100%); }
-}
-
-/* Win Display inside Infoboard */
-.infoboard-win-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 100%;
-  animation: multPop 0.22s ease-out;
-}
-
-.win-badge-img {
-  height: 22px;
+  bottom: -6%;
+  height: 95%;
   width: auto;
   object-fit: contain;
 }
+.pond-lily.lily-left { left: -2%; }
+.pond-lily.lily-center { left: 42%; height: 65%; bottom: 4%; }
+.pond-lily.lily-right { right: -2%; }
 
-.infoboard-win-amount {
-  font-size: 18px;
-  font-weight: 900;
-  color: #fff6a9;
-  text-shadow: 0 2px 3px #2b0000, 0 0 10px rgba(255, 215, 0, 0.8);
-}
-
-/* Free Spins Counter Bar */
-.freespin-counter-bar {
-  position: relative;
-  z-index: 6;
-  width: 88%;
-  background: linear-gradient(90deg, rgba(80, 4, 10, 0.9), rgba(168, 12, 24, 0.95), rgba(80, 4, 10, 0.9));
-  border: 1.5px solid #ffd54f;
-  border-radius: 99px;
-  padding: 2px 14px;
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  font-weight: 900;
-  color: #fff3b0;
-}
-
-.fs-remaining-num {
-  font-size: 15px;
-  color: #ffffff;
-  background: #b80c18;
-  padding: 0 8px;
-  border-radius: 99px;
-  border: 1px solid #ffd54f;
-}
-
-/* 3 Rounded Dark Pill Meters (Wallet | PG Shield | Bet) - Matches after_mulai_1.png */
-.pg-Wallet-pills-row {
-  position: relative;
+/* 3 Wallet Pills Row (Matches after_mulai_1.png 1:1) */
+.pg-wallet-pills-row {
+  position: absolute;
+  top: 3.8%;
+  left: 1.5%;
+  width: 97%;
+  height: 15.8%;
   z-index: 5;
-  width: 96%;
   display: grid;
-  grid-template-columns: 1.38fr 0.74fr 1.38fr;
+  grid-template-columns: 1.42fr 0.76fr 1.42fr;
   gap: 6px;
-  padding: 0 2px;
+  align-items: center;
 }
 
 .pg-pill-meter {
-  height: 30px;
-  background: rgba(34, 20, 11, 0.68);
+  height: 100%;
+  background: rgba(20, 12, 10, 0.76);
   border-radius: 999px;
+  padding: 0 10px;
   display: flex;
   align-items: center;
-  padding: 0 7px;
-  cursor: pointer;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.65);
-}
-
-.pg-pill-meter.pill-left {
   justify-content: space-between;
+  cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.85);
 }
-
 .pg-pill-meter.pill-center {
   justify-content: center;
 }
 
-.pg-pill-meter.pill-right {
-  justify-content: space-between;
-}
-
-.pill-icon-left {
+.wallet-user-ic-wrap {
+  position: relative;
   width: 24px;
   height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
-
-.pill-icon-right {
+.wallet-user-ic {
   width: 22px;
   height: 22px;
-  flex-shrink: 0;
   object-fit: contain;
+}
+.wallet-user-lines {
+  position: absolute;
+  top: 0px;
+  right: -3px;
+  width: 9px;
+  height: auto;
 }
 
 .pill-value-text {
-  font-size: 13px;
+  font-size: clamp(11px, 1.65vh, 14px);
   font-weight: 700;
-  color: #d6a97a;
-  flex: 1;
-  text-align: center;
+  color: #d89b48;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.pg-shield-icon {
-  height: 24px;
-  width: auto;
-  opacity: 0.55;
-  object-fit: contain;
+.pill-left .pill-value-text {
+  margin-left: auto;
+  margin-right: 4px;
+}
+.pill-right .pill-value-text {
+  margin-left: 6px;
+  margin-right: auto;
 }
 
+.pg-shield-icon {
+  height: 60%;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.85;
+}
 .pill-win-box {
   display: flex;
   align-items: center;
   gap: 4px;
 }
-
 .pill-win-tag {
-  height: 11px;
+  height: 15px;
   width: auto;
+  object-fit: contain;
 }
-
 .pill-win-val {
-  font-size: 12.5px;
+  font-size: clamp(10px, 1.5vh, 13px);
   font-weight: 800;
-  color: #ffd54f;
+  color: #ffca28;
   white-space: nowrap;
 }
+.pill-icon-right {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 
-/* 5 Iconic PG Soft Control Buttons Row - Matches after_mulai_1.png */
+/* 5 Control Buttons Row + Right Hamburger inside Wooden Box */
 .pg-controls-row {
-  position: relative;
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 100%;
+  height: 60%;
   z-index: 6;
-  width: 92%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 5.5%;
+  padding: 0 5%;
 }
 
 .pg-round-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  position: relative;
+  width: 11.5%;
+  aspect-ratio: 1 / 1;
   border: none;
-  background: rgba(26, 15, 8, 0.76);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8), 0 2px 5px rgba(0, 0, 0, 0.45);
   transition: transform 0.1s ease, filter 0.15s ease;
 }
-
-.pg-round-btn:hover {
-  filter: brightness(1.18);
-}
-
 .pg-round-btn:active {
   transform: scale(0.92);
 }
-
-.btn-icon-sprite {
-  width: 20px;
-  height: 20px;
+.round-btn-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
-
-.btn-icon-sprite.icon-minus {
-  width: 16px;
-  height: 5px;
-}
-
-.btn-icon-sprite.icon-plus {
-  width: 16px;
-  height: 16px;
+.btn-icon-sprite {
+  position: relative;
+  z-index: 2;
+  width: 52%;
+  height: 52%;
+  object-fit: contain;
 }
 
 /* Auto Spin Composite Icon */
 .auto-icon-composite {
   position: relative;
-  width: 24px;
-  height: 24px;
+  z-index: 2;
+  width: 62%;
+  height: 62%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .auto-circle-img {
   position: absolute;
   inset: 0;
@@ -1102,865 +1316,646 @@ html, body {
   height: 100%;
   object-fit: contain;
 }
-
 .auto-play-img {
-  width: 8px;
-  height: 10px;
+  width: 42%;
+  height: 42%;
   object-fit: contain;
-  margin-left: 1px;
+  margin-left: 2px;
 }
 
-/* Center Jade Green Spin Button (spin_base.png + spin_arrow.png) */
-.pg-jade-spin-btn {
+/* Center Lucky Neko Shimenawa Rope + Golden Bells Spin Button */
+.neko-spin-btn {
   position: relative;
-  width: 84px;
-  height: 84px;
+  width: 22.5%;
+  aspect-ratio: 181 / 171;
   border: none;
   background: transparent;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
-  transition: transform 0.1s ease, filter 0.15s ease;
+  cursor: pointer;
+  margin-top: -2%;
+  transition: transform 0.1s ease;
 }
-
-.pg-jade-spin-btn:hover {
-  filter: brightness(1.06);
-}
-
-.pg-jade-spin-btn:active {
+.neko-spin-btn:active {
   transform: scale(0.94);
 }
-
 .spin-base-img {
-  position: absolute;
-  inset: 0;
+  position: relative;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  pointer-events: none;
-}
-
-.spin-arrow-img {
-  position: relative;
   z-index: 2;
-  width: 48px;
-  height: 48px;
+}
+.spin-arrow-img {
+  position: absolute;
+  width: 68%;
+  height: 68%;
   object-fit: contain;
-  margin: 0;
-  pointer-events: none;
-  animation: slowIdleSpin 9s linear infinite;
+  z-index: 3;
+  animation: idleSpinRotate 8s linear infinite;
 }
-
-.pg-jade-spin-btn.spinning-state .spin-arrow-img {
-  animation: fastSpinRotate 0.65s linear infinite;
+.neko-spin-btn.spinning-state .spin-arrow-img {
+  animation: fastSpinRotate 0.35s linear infinite;
 }
-
-.game-shell.turbo-mode .pg-jade-spin-btn.spinning-state .spin-arrow-img {
-  animation: fastSpinRotate 0.25s linear infinite;
+@keyframes idleSpinRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
 }
-
-@keyframes slowIdleSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
 @keyframes fastSpinRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
 }
 
+/* Hanging Twin Golden Bells under Spin Button */
+.spin-bells-holder {
+  position: absolute;
+  bottom: -26%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48%;
+  height: 45%;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.spin-bell {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  transform-origin: top center;
+  animation: bellJingle 2.2s ease-in-out infinite alternate;
+}
+.spin-bell.bell-left {
+  margin-right: -4px;
+}
+.spin-bell.bell-right {
+  margin-left: -4px;
+  animation-delay: 0.25s;
+}
+.neko-spin-btn.spinning-state .spin-bell {
+  animation: bellJingleFast 0.22s ease-in-out infinite alternate;
+}
+@keyframes bellJingle {
+  0% { transform: rotate(-4deg); }
+  100% { transform: rotate(4deg); }
+}
+@keyframes bellJingleFast {
+  0% { transform: rotate(-14deg); }
+  100% { transform: rotate(14deg); }
+}
+
+/* Auto Spin Active Ring & Counter Badge */
+.spin-auto-ring {
+  position: absolute;
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  z-index: 4;
+}
 .auto-counter-badge {
   position: absolute;
-  z-index: 4;
-  inset: 0;
-  border-radius: 50%;
+  z-index: 5;
   display: none;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: clamp(14px, 2.2vh, 18px);
   font-weight: 900;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
 }
 
-.pg-jade-spin-btn.auto-active .spin-arrow-img {
-  opacity: 0.25;
-}
-
-.pg-jade-spin-btn.auto-active .auto-counter-badge {
-  display: flex;
-}
-
-/* Subtle Bottom Utility Strip */
-.pg-mini-menu-row {
-  position: relative;
-  z-index: 6;
-  width: 95%;
-  max-width: 440px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-  margin-top: auto;
-  padding-bottom: 6px;
-}
-
-.mini-menu-btn {
-  flex: 1 1 0;
-  min-width: 0;
-  background: rgba(18, 10, 5, 0.68);
-  border: 1px solid rgba(214, 169, 122, 0.35);
-  color: #e5b98a;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 4px 4px;
-  border-radius: 99px;
+/* Far-Right Hamburger Menu Icon */
+.pg-hamburger-btn {
+  position: absolute;
+  right: 2.2%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
   cursor: pointer;
+  opacity: 0.8;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  transition: all 0.15s ease;
+}
+.pg-hamburger-btn img {
+  width: 20px;
+  height: auto;
 }
 
-.mini-menu-btn .btn-ic {
-  font-size: 11px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.mini-menu-btn .btn-lbl {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.2;
-}
-
-.mini-menu-btn:hover {
-  color: #ffffff;
-  border-color: #ffd54f;
-  background: rgba(32, 16, 8, 0.85);
-}
-
-.mini-menu-btn.muted {
-  opacity: 0.65;
-  border-color: rgba(255, 82, 82, 0.4);
-  color: #ff8a80;
-}
-
-.mini-menu-btn.install-app-btn {
-  background: linear-gradient(180deg, #c48205, #7a4603);
-  border-color: #ffe082;
-  color: #fff9db;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-}
-
-.mini-menu-btn.install-app-btn.pwa-ready {
-  box-shadow: 0 0 10px rgba(255, 213, 79, 0.85);
-}
-
-@media (display-mode: standalone) {
-  .mini-menu-btn.install-app-btn {
-    display: none;
-  }
-}
-
-/* =========================================================
-   5. OFFICIAL PG SOFT BIG WIN / FREE SPIN / TOTAL WIN MODAL
-   ========================================================= */
-.celebration-modal {
+/* Free Spins Remaining Counter Overlay (Replaces Controls during Free Spins) */
+.free-spin-counter-bar {
   position: absolute;
-  inset: 0;
-  z-index: 140;
-  background: radial-gradient(circle at 50% 45%, rgba(150, 12, 22, 0.94) 0%, rgba(28, 3, 5, 0.97) 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  padding: 48px 18px 36px;
-  text-align: center;
-  overflow: hidden;
-}
-
-.celebration-modal.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-.celebration-rays {
-  position: absolute;
-  top: 10%;
-  width: 580px;
-  height: 580px;
-  background: repeating-conic-gradient(
-    from 0deg,
-    rgba(255, 215, 0, 0.18) 0deg 12deg,
-    transparent 12deg 24deg
-  );
-  border-radius: 50%;
-  animation: fastSpinRotate 16s linear infinite;
-  pointer-events: none;
-}
-
-.celeb-pile-bg {
-  position: absolute;
-  bottom: 0;
+  top: 26%;
   left: 0;
   width: 100%;
-  height: auto;
-  object-fit: contain;
-  pointer-events: none;
-  z-index: 1;
-}
-
-#coinCanvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.celebration-content {
-  position: relative;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.celeb-title-sprite {
-  width: 88%;
-  max-height: 130px;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.85));
-  animation: scaleBounce 0.55s ease-in-out infinite alternate;
-}
-
-@keyframes scaleBounce {
-  from { transform: scale(0.95); }
-  to { transform: scale(1.04); }
-}
-
-.celeb-fs-count {
-  font-size: 74px;
-  font-weight: 900;
-  background: linear-gradient(180deg, #ffffff 0%, #fff176 40%, #ff9800 85%, #e65100 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 0 #5c040a) drop-shadow(0 0 22px rgba(255, 200, 0, 0.9));
-  line-height: 1;
-}
-
-.celeb-fs-sub {
-  width: 72%;
-  height: auto;
-  object-fit: contain;
-}
-
-.celebration-amount-box {
-  background: linear-gradient(180deg, rgba(90, 5, 12, 0.92) 0%, rgba(36, 2, 5, 0.96) 100%);
-  border: 2.5px solid #ffd54f;
-  border-radius: 999px;
-  padding: 10px 28px;
-  font-size: 28px;
-  font-weight: 900;
-  color: #fff6a9;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.95), 0 0 14px #ffb300;
-  box-shadow: 0 0 28px rgba(255, 193, 7, 0.65);
-  margin-bottom: 16px;
-}
-
-/* Official Red & Gold Ornate Button (MULAI / KUMPULKAN) */
-.celeb-ornate-btn {
-  position: relative;
-  width: 210px;
-  height: 76px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  height: 58%;
+  z-index: 12;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.1s ease, filter 0.15s ease;
+  gap: 12px;
+  padding: 0 16px;
 }
-
-.celeb-ornate-btn:hover {
-  filter: brightness(1.08);
-}
-
-.celeb-ornate-btn:active {
-  transform: scale(0.95);
-}
-
-.ornate-btn-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.rfs-label-img {
+  height: 62%;
+  width: auto;
   object-fit: contain;
 }
-
-.ornate-btn-txt {
-  position: relative;
-  z-index: 2;
-  height: 24px;
+.rfs-count-sprites {
+  display: flex;
+  align-items: center;
+  height: 66%;
+}
+.rfs-count-sprites .tw-digit-sp {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+.lfs-label-img {
+  height: 64%;
   width: auto;
   object-fit: contain;
 }
 
-/* =========================================================
-   6. DRAWER MODALS (PAYTABLE, BET, AUTO, HISTORY)
-   ========================================================= */
-.sheet-modal {
+/* Slide-up Utility Menu Drawer */
+.pg-utility-drawer {
+  position: absolute;
+  bottom: 76%;
+  left: 4%;
+  width: 92%;
+  background: rgba(22, 10, 16, 0.96);
+  border: 1.5px solid rgba(255, 202, 40, 0.45);
+  border-radius: 14px;
+  padding: 8px 6px;
+  z-index: 30;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.85);
+}
+.mini-menu-btn {
+  background: transparent;
+  border: none;
+  color: #e0c8d0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.util-sp-ic {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* ==========================================
+   6. AUTHENTIC FEATURE BUY MODAL (fb_window)
+   ========================================== */
+.neko-modal-overlay {
   position: absolute;
   inset: 0;
-  z-index: 160;
-  background: rgba(0, 0, 0, 0.78);
-  display: flex;
-  align-items: flex-end;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
-}
-
-.sheet-modal.open {
-  opacity: 1;
-  visibility: visible;
-}
-
-.sheet-box {
-  width: 100%;
-  max-height: 82%;
-  background: linear-gradient(180deg, #2b180e 0%, #140a05 100%);
-  border-top: 3px solid #f5b942;
-  border-radius: 18px 18px 0 0;
-  padding: 16px;
-  overflow-y: auto;
-  color: #f5f5f5;
-}
-
-.sheet-header {
-  display: flex;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 200;
+  display: none;
   align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(245, 185, 66, 0.3);
-  padding-bottom: 10px;
-  margin-bottom: 12px;
+  justify-content: center;
+  padding: 18px;
 }
-
-.sheet-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: #ffd54f;
+.neko-modal-overlay.open {
+  display: flex;
 }
-
-.sheet-desc {
-  font-size: 12px;
-  color: #d6a97a;
-  margin-bottom: 12px;
-  line-height: 1.45;
-}
-
-.sheet-close {
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
-  color: #fff;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.bet-options-grid, .auto-options-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.bet-opt-btn, .auto-opt-btn {
-  background: rgba(0, 0, 0, 0.45);
-  border: 1.5px solid rgba(245, 185, 66, 0.35);
-  border-radius: 10px;
-  padding: 11px 8px;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.bet-opt-btn:hover, .auto-opt-btn:hover, .bet-opt-btn.selected {
-  background: linear-gradient(180deg, #f5b942, #a86c00);
-  color: #1f0800;
-  border-color: #fff8c4;
-}
-
-/* History List */
-.history-list {
+.fb-dialog-box {
+  position: relative;
+  width: 84%;
+  aspect-ratio: 607 / 594;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.history-row {
-  background: rgba(0, 0, 0, 0.42);
-  border: 1px solid rgba(245, 185, 66, 0.25);
-  border-radius: 8px;
-  padding: 8px 12px;
-  display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 8% 7%;
+}
+.fb-window-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+.fb-modal-title {
+  position: relative;
+  z-index: 2;
+  width: 58%;
+  height: auto;
+  margin-top: -6%;
+  margin-bottom: 6%;
+}
+.fb-modal-cost-lbl {
+  position: relative;
+  z-index: 2;
+  width: 20%;
+  height: auto;
+  margin-bottom: 2%;
+}
+.fb-modal-price {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(20px, 3.2vh, 28px);
+  font-weight: 900;
+  color: #fff3b0;
+  text-shadow: 0 2px 6px rgba(80, 20, 0, 0.95);
+  margin-bottom: 5%;
+}
+.fb-modal-desc {
+  position: relative;
+  z-index: 2;
+  width: 88%;
+  height: auto;
+  margin-bottom: 8%;
+}
+.fb-modal-actions {
+  position: relative;
+  z-index: 2;
+  width: 94%;
+  display: flex;
   justify-content: space-between;
-  font-size: 12px;
-}
-
-.history-row .h-win {
-  font-weight: 800;
-  color: #ffd54f;
-}
-
-/* Paytable Grid */
-.paytable-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-.paytable-item {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(245, 185, 66, 0.25);
-  border-radius: 10px;
-  padding: 8px;
-  display: flex;
-  align-items: center;
   gap: 10px;
 }
-
-.paytable-item .pt-icon {
-  width: 48px;
-  height: 58px;
-  flex-shrink: 0;
+.fb-action-btn {
   position: relative;
-}
-
-.paytable-item .pt-info {
-  font-size: 11px;
-  line-height: 1.45;
-  color: #e6ccb2;
-}
-
-.paytable-item .pt-info strong {
-  color: #ffd54f;
-  display: block;
-  font-size: 12px;
-}
-
-/* ==========================================
-   PIN LOCK SECURITY OVERLAY
-   ========================================== */
-.pin-lock-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  background: radial-gradient(circle at 50% 35%, #42060b 0%, #1a0204 55%, #080102 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
-}
-
-.pin-lock-overlay.unlocked {
-  opacity: 0;
-  transform: scale(1.08);
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.pin-card {
-  width: 100%;
-  max-width: 340px;
-  background: linear-gradient(180deg, rgba(74, 9, 15, 0.94) 0%, rgba(26, 4, 6, 0.98) 100%);
-  border: 2px solid #ffd54f;
-  border-radius: 24px;
-  padding: 26px 20px 22px;
-  box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.9),
-    0 0 25px rgba(255, 213, 79, 0.25),
-    inset 0 1px 2px rgba(255, 255, 255, 0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.pin-icon-badge {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffd54f 0%, #d48200 65%, #6b3d00 100%);
-  border: 2px solid #fff3a1;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7), 0 0 16px rgba(255, 213, 79, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  margin-bottom: 14px;
-  color: #2b0505;
-}
-
-.pin-title {
-  font-family: 'Noto Serif SC', serif;
-  font-size: 20px;
-  font-weight: 900;
-  color: #fff4ba;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.pin-subtitle {
-  font-size: 12px;
-  color: #d6a97a;
-  margin-bottom: 18px;
-  line-height: 1.4;
-}
-
-.pin-dots-container {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
-.pin-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid #f7c548;
-  background: rgba(0, 0, 0, 0.45);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.pin-dot.filled {
-  background: radial-gradient(circle at 35% 30%, #fff7b8 0%, #f7c548 60%, #b37400 100%);
-  border-color: #fff9c4;
-  box-shadow: 0 0 10px rgba(255, 213, 79, 0.8);
-  transform: scale(1.18);
-}
-
-.pin-error-msg {
-  height: 18px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #ff5252;
-  margin-bottom: 12px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.pin-error-msg.visible {
-  opacity: 1;
-}
-
-.pin-keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  width: 100%;
-  max-width: 270px;
-}
-
-.pin-btn {
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1.5px solid rgba(247, 197, 72, 0.35);
-  background: radial-gradient(circle at 50% 30%, #3a080d 0%, #1d0306 100%);
-  color: #ffe082;
-  font-size: 22px;
-  font-weight: 900;
+  width: 48%;
+  aspect-ratio: 182 / 62;
+  border: none;
+  background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-  transition: transform 0.1s ease, background 0.15s, border-color 0.15s;
+  transition: transform 0.1s;
 }
-
-.pin-btn:hover {
-  border-color: #ffd54f;
-  background: radial-gradient(circle at 50% 30%, #540e15 0%, #2b060a 100%);
+.fb-action-btn:active {
+  transform: scale(0.95);
 }
-
-.pin-btn:active {
-  transform: scale(0.92);
-}
-
-.pin-btn.action-btn {
-  font-size: 14px;
-  font-weight: 800;
-  color: #d6a97a;
-}
-
-.pin-hint {
-  margin-top: 14px;
-  font-size: 11px;
-  color: rgba(255, 240, 200, 0.5);
-  letter-spacing: 0.5px;
-}
-
-/* Shake animation on wrong PIN */
-@keyframes pinShake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-9px); }
-  40%, 80% { transform: translateX(9px); }
-}
-
-.pin-card.shake {
-  animation: pinShake 0.4s ease-in-out;
-  border-color: #ff5252 !important;
-}
-
-
-
-/* ==========================================
-   LUCKY NEKO THEME & 6-REEL CASINO STYLES
-   ========================================== */
-.lucky-neko-shell {
-  background: radial-gradient(circle at 50% 20%, #4a0d14 0%, #200508 50%, #0d0103 100%) !important;
-}
-
-.lucky-neko-splash {
-  background: radial-gradient(circle at 50% 30%, #5d101a 0%, #290407 65%, #100102 100%) !important;
-}
-
-.neko-splash-emblem {
-  font-size: 58px;
-  line-height: 1;
-  margin-bottom: 8px;
-  filter: drop-shadow(0 0 16px rgba(255, 213, 79, 0.8));
-  animation: catPulse 1.8s infinite ease-in-out;
-}
-
-@keyframes catPulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(255, 213, 79, 0.6)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 24px rgba(255, 213, 79, 0.95)); }
-}
-
-/* Cat Multiplier Strip */
-.cat-multiplier-strip {
-  width: 94%;
-  height: 38px;
-  background: linear-gradient(90deg, #7a151f 0%, #b82534 50%, #7a151f 100%);
-  border: 1.5px solid #ffd54f;
-  border-radius: 99px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 4px auto 6px auto;
-  position: relative;
-  transition: all 0.25s ease;
-}
-
-.cat-multiplier-strip.glowing {
-  box-shadow: 0 0 20px #ffd54f, 0 0 35px #ffb300, inset 0 0 10px #fff;
-  transform: scale(1.03);
-  border-color: #ffffff;
-}
-
-.cat-strip-icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
-
-.cat-strip-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #fff9c4;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-}
-
-.cat-strip-val {
-  font-size: 18px;
-  font-weight: 900;
-  color: #ffd54f;
-  font-family: 'Arial Black', Impact, sans-serif;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255, 213, 79, 0.6);
-}
-
-.cat-strip-hint {
-  font-size: 9px;
-  font-weight: 600;
-  color: rgba(255, 249, 196, 0.7);
-}
-
-/* 6-Reel Grid */
-.reel-board-wrapper {
-  position: relative;
-  width: 95%;
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 auto;
-}
-
-.neko-reel-board {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 3px;
-  background: rgba(18, 4, 6, 0.85) url('../assets/pg_native/images/8b9d732384.46f8f.jpg') center center / cover no-repeat;
-  padding: 5px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(255, 215, 79, 0.4);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8), 0 4px 16px rgba(0, 0, 0, 0.7);
-}
-
-.neko-tile-frame {
+.fb-act-bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: fill;
-  z-index: 3;
-  pointer-events: none;
 }
-
-.neko-reel-col {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  overflow: hidden;
-}
-
-.neko-reel-track {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  transition: transform 0.1s linear;
-}
-
-.neko-reel-col.reel-spinning .neko-reel-track {
-  animation: reelSpinBlur 0.18s infinite linear;
-}
-
-@keyframes reelSpinBlur {
-  0% { transform: translateY(0); filter: blur(2px); }
-  50% { transform: translateY(-12px); filter: blur(3px); }
-  100% { transform: translateY(0); filter: blur(2px); }
-}
-
-.neko-cell-slot {
-  aspect-ratio: 1 / 1;
-  position: relative;
-  border-radius: 6px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, #2b0b10 0%, #170407 100%);
-  border: 1px solid rgba(255, 215, 79, 0.15);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0,0,0,0.4);
-  transition: transform 0.15s ease;
-}
-
-.neko-tile {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px;
-}
-
-.neko-glyph {
-  width: 86%;
-  height: 86%;
-  object-fit: contain;
+.fb-act-txt {
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  max-width: 84%;
+  max-height: 58%;
+  object-fit: contain;
 }
 
-.neko-tile-gold {
-  background: linear-gradient(180deg, rgba(255, 213, 79, 0.25) 0%, rgba(184, 119, 0, 0.25) 100%);
-  border: 1.5px solid #ffd54f;
-  box-shadow: inset 0 0 8px rgba(255, 213, 79, 0.4), 0 0 6px rgba(255, 213, 79, 0.4);
-}
-
-.neko-tile-special {
-  background: radial-gradient(circle, rgba(255, 213, 79, 0.3) 0%, rgba(184, 119, 0, 0.05) 70%);
-}
-
-.neko-mult-tag {
+/* ==========================================
+   7. FREE SPINS BONUS INTRO SCREEN (fs_bg.jpg)
+   ========================================== */
+.fs-intro-modal {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10% 6% 9%;
+  background: #1a0612;
+}
+.fs-intro-modal.active {
+  display: flex;
+}
+.fs-intro-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.fs-intro-cat {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  height: auto;
+  object-fit: contain;
+  z-index: 2;
+}
+.fs-intro-content {
+  position: relative;
   z-index: 4;
-  background: #d32f2f;
-  border: 1px solid #ffd54f;
-  color: #fff;
-  font-size: 8px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.fs-won-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 12%;
+  margin-top: 2%;
+}
+.fs-won-count .tw-digit-sp {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.7));
+}
+.fs-won-title {
+  width: 86%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: auto;
+  margin-top: 2%;
+}
+.fs-won-desc {
+  width: 88%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 6%;
+}
+.fs-start-btn {
+  position: relative;
+  width: 56%;
+  aspect-ratio: 408 / 153;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s;
+}
+.fs-start-btn:active {
+  transform: scale(0.95);
+}
+.fs-start-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.fs-start-txt {
+  position: relative;
+  z-index: 2;
+  width: 44%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ==========================================
+   8. BIG WIN / MEGA WIN / SUPER MEGA WIN / TOTAL WIN MODAL
+   ========================================== */
+.celebration-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 320;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 4, 10, 0.92);
+  overflow: hidden;
+}
+.celebration-modal.active {
+  display: flex;
+}
+.celeb-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.celebration-rays {
+  position: absolute;
+  width: 160%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 15deg,
+    rgba(255, 215, 64, 0.22) 15deg 30deg,
+    transparent 30deg 45deg,
+    rgba(255, 215, 64, 0.22) 45deg 60deg,
+    transparent 60deg 75deg,
+    rgba(255, 215, 64, 0.22) 75deg 90deg,
+    transparent 90deg 105deg,
+    rgba(255, 215, 64, 0.22) 105deg 120deg,
+    transparent 120deg 135deg,
+    rgba(255, 215, 64, 0.22) 135deg 150deg,
+    transparent 150deg 165deg,
+    rgba(255, 215, 64, 0.22) 165deg 180deg,
+    transparent 180deg 195deg,
+    rgba(255, 215, 64, 0.22) 195deg 210deg,
+    transparent 210deg 225deg,
+    rgba(255, 215, 64, 0.22) 225deg 240deg,
+    transparent 240deg 255deg,
+    rgba(255, 215, 64, 0.22) 255deg 270deg,
+    transparent 270deg 285deg,
+    rgba(255, 215, 64, 0.22) 285deg 300deg,
+    transparent 300deg 315deg,
+    rgba(255, 215, 64, 0.22) 315deg 330deg,
+    transparent 330deg 345deg,
+    rgba(255, 215, 64, 0.22) 345deg 360deg
+  );
+  animation: spinRays 14s linear infinite;
+  z-index: 2;
+}
+@keyframes spinRays {
+  to { transform: rotate(360deg); }
+}
+.celeb-cat-emblem {
+  position: relative;
+  z-index: 3;
+  width: 68%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: -6%;
+  animation: catEmblemFloat 2s ease-in-out infinite alternate;
+}
+@keyframes catEmblemFloat {
+  0% { transform: scale(0.97); }
+  100% { transform: scale(1.03); }
+}
+.celebration-box {
+  position: relative;
+  z-index: 4;
+  width: 92%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.celeb-title-img {
+  width: 78%;
+  max-height: 95px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.75));
+}
+.celeb-amount-sprites {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: nowrap;
+  height: 46px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+}
+.bw-digit-sp, .tw-digit-sp {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+.bw-sep-sp {
+  height: 36%;
+  width: auto;
+  object-fit: contain;
+  align-self: flex-end;
+}
+.celebration-amount {
+  font-size: clamp(16px, 2.4vh, 22px);
   font-weight: 900;
-  padding: 1px 3px;
-  border-radius: 4px;
-  line-height: 1;
+  color: #ffe082;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  margin-bottom: 18px;
+}
+.celeb-collect-btn {
+  position: relative;
+  width: 54%;
+  aspect-ratio: 407 / 152;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.collect-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.collect-txt {
+  position: relative;
+  z-index: 2;
+  width: 62%;
+  height: auto;
+  object-fit: contain;
 }
 
-.neko-cell-slot.cat-bounce {
-  animation: catBounceAnim 0.6s ease-in-out infinite alternate;
+/* ==========================================
+   9. SHEET MODALS (BET, AUTO, PAYTABLE, HISTORY)
+   ========================================== */
+.sheet-modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 250;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
 }
-
-@keyframes catBounceAnim {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.12); box-shadow: 0 0 12px #ffd54f; }
+.sheet-modal.open {
+  display: flex;
 }
-
-.neko-cell-slot.winning-cell {
-  animation: winFlash 0.4s infinite alternate;
-  z-index: 5;
+.sheet-box {
+  width: 100%;
+  max-height: 78%;
+  background: linear-gradient(180deg, #2b121e 0%, #16080f 100%);
+  border-top: 2px solid #ffd54f;
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+  overflow-y: auto;
+  color: #ffffff;
 }
-
-@keyframes winFlash {
-  0% { transform: scale(1); filter: brightness(1); }
-  100% { transform: scale(1.08); filter: brightness(1.4) drop-shadow(0 0 8px #ffd54f); }
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 213, 79, 0.25);
 }
-
-/* Free Spin Night Festival Atmosphere */
-.game-shell.free-spin-active {
-  background: radial-gradient(circle at 50% 20%, #2d054d 0%, #120124 50%, #06000d 100%) !important;
+.sheet-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffe082;
 }
-
-.game-shell.free-spin-active .cat-multiplier-strip {
-  background: linear-gradient(90deg, #51087e 0%, #7b1fa2 50%, #51087e 100%);
-  border-color: #ea80fc;
+.sheet-close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
 }
-
-.game-shell.free-spin-active .cat-strip-val {
-  color: #ea80fc;
-  text-shadow: 0 0 10px #e040fb;
+.sheet-desc {
+  font-size: 12px;
+  color: #e0c8d2;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+.bet-options-grid, .auto-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.bet-choice-btn, .auto-opt-btn {
+  padding: 11px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 213, 79, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.bet-choice-btn.active, .auto-opt-btn:hover {
+  background: linear-gradient(180deg, #f06292 0%, #c2185b 100%);
+  border-color: #ff80ab;
+}
+.paytable-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.paytable-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 213, 79, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 12px;
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#211006" />
+  <meta name="theme-color" content="#1e0b14" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -11,13 +11,12 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="assets/sprites/pwa_icon_192.png" />
   <link rel="apple-touch-icon" href="assets/sprites/pwa_icon_192.png" />
-  <title>PG Soft — Lucky Neko</title>
-  <link rel="stylesheet" href="css/style.css?v=2.0" />
+  <title>Lucky Neko</title>
+  <link rel="stylesheet" href="css/style.css?v=3.0" />
 </head>
 <body>
   <!-- ==========================================
-       0. PIN SECURITY LOCK SCREEN (PG SOFT STYLE)
-       Default PIN: 8888
+       0. PIN SECURITY LOCK SCREEN (DEFAULT: 8888)
        ========================================== -->
   <div class="pin-lock-overlay" id="pinLockOverlay">
     <div class="pin-card" id="pinCard">
@@ -52,187 +51,356 @@
   </div>
 
   <div class="app-backdrop" id="appBackdrop">
-    <!-- PG Soft 9:16 Portrait Game Shell -->
+    <!-- PG Soft 9:16 Portrait Game Shell (1080x1920 Native Coordinate Proportions) -->
     <main class="game-shell lucky-neko-shell" id="gameShell">
 
       <!-- ==========================================
-           1. OFFICIAL PG SOFT SPLASH & LOADING SCREEN
+           1. OFFICIAL PG SOFT LUCKY NEKO SPLASH SCREEN
            ========================================== -->
       <div class="splash-overlay" id="splashOverlay">
-        <!-- Glossy Red MULAI CTA Button -->
+        <img class="splash-bg-img" src="assets/sprites/neko/splash_bg.jpg" alt="Lucky Neko" draggable="false" />
+
+        <!-- Glossy Pink MULAI CTA Button -->
         <div class="splash-center-cta" id="splashCenterCta" style="display: none;">
           <button type="button" class="pg-mulai-btn" id="startBtn">MULAI</button>
         </div>
 
-        <!-- Loading Progress State -->
+        <!-- Authentic Pink Striped Loading Progress Bar -->
         <div class="splash-progress-container" id="splashProgress">
           <div class="splash-progress-track">
-            <div class="splash-progress-fill"></div>
+            <div class="splash-progress-fill" id="splashProgressFill"></div>
           </div>
-          <div class="splash-progress-text">Memuat... 0%</div>
+          <div class="splash-progress-text" id="splashProgressText">Memuat Permainan [0%]</div>
           <div class="pg-load-tip">Perbarui perangkat Anda ke versi terakhir untuk pengalaman bermain terbaik!</div>
         </div>
 
-        <!-- Official PG Soft / MGA / BMM Footer -->
+        <!-- Exact PG Soft / MGA / BMM Footer -->
         <div class="splash-footer">
-          <div class="splash-cert-strip">
-            <span class="cert-item">bmm testlabs</span>
-            <span class="cert-sep">•</span>
-            <span class="cert-item">MGA</span>
-            <span class="cert-sep">•</span>
-            <span class="cert-item">GA</span>
-            <span class="cert-sep">•</span>
-            <span class="cert-item cert-age">18+</span>
-          </div>
-          <div class="splash-cr-text">© PG SOFT. Seluruh hak cipta dilindungi undang-undang.</div>
+          <img class="splash-footer-img" src="assets/sprites/neko/splash_footer_exact.png" alt="PG Soft MGA BMM" draggable="false" />
         </div>
       </div>
 
       <!-- ==========================================
-           2. IN-GAME HEADER & MULTIPLIER BAR
+           2. TOP TEMPLE ROOF, SAKURA TREES, WAYS BAR & 4-CELL TOP REEL
            ========================================== -->
-      <header class="game-header">
-        <button type="button" class="hdr-btn" id="backBtn" title="Kembali">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ffe082" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
-        </button>
+      <section class="neko-top-section">
+        <!-- Day / Night Temple Roof Background -->
+        <img class="temple-roof-bg day-only" src="assets/sprites/neko/ui_top_bg.png" alt="" draggable="false" />
+        <img class="temple-roof-bg night-only" src="assets/sprites/neko/bns_ui_top_bg.png" alt="" draggable="false" />
 
-        <div class="hdr-title-box">
-          <img class="hdr-shield" src="assets/sprites/shield_pg.png" alt="PG Soft" />
-          <span class="hdr-game-name">LUCKY NEKO</span>
-        </div>
+        <!-- Left & Right Sakura Branches -->
+        <img class="sakura-tree tree-left day-only" src="assets/sprites/neko/ui_tree_left_tight.png" alt="" draggable="false" />
+        <img class="sakura-tree tree-right day-only" src="assets/sprites/neko/ui_tree_right_tight.png" alt="" draggable="false" />
+        <img class="sakura-tree tree-left night-only" src="assets/sprites/neko/bns_ui_tree_left_tight.png" alt="" draggable="false" />
+        <img class="sakura-tree tree-right night-only" src="assets/sprites/neko/bns_ui_tree_right_tight.png" alt="" draggable="false" />
 
+        <!-- Falling Sakura Petals Layer -->
+        <div class="sakura-petals-layer" id="sakuraPetalsLayer"></div>
+
+        <!-- Subtle Demo Trigger Button (Top Right Corner) -->
         <button type="button" class="hdr-trophy-btn" id="demoMenuBtn" title="Menu Demo Fitur">
           <span class="trophy-icon">🏆</span>
-          <span class="trophy-dot"></span>
         </button>
-
         <div class="demo-popup-menu hidden" id="demoPopupMenu">
           <button type="button" class="demo-popup-item" id="demoScatterBtn">⛩️ Picu 4 Scatter (Putaran Gratis)</button>
           <button type="button" class="demo-popup-item" id="demoCatWinBtn">🐱 Picu Kucing Emas &amp; Menang Besar</button>
         </div>
-      </header>
 
-      <!-- Signature Lucky Neko Cat Multiplier Banner -->
-      <div class="cat-multiplier-strip" id="catBadge">
-        <img class="cat-strip-icon" src="assets/sprites/h_neko.png" alt="Neko" />
-        <div class="cat-strip-label">PENGALI KUCING:</div>
-        <div class="cat-strip-val" id="catMultVal">x1</div>
-        <div class="cat-strip-hint">(+2 setiap Kucing Emas)</div>
-      </div>
-
-      <!-- ==========================================
-           3. 6 REELS X 5 ROWS REEL BOARD
-           ========================================== -->
-      <div class="reel-board-wrapper">
-        <div class="neko-reel-board" id="reelBoard"></div>
-
-        <!-- Banner Kemenangan Cascade / Win Pop -->
-        <div class="banner-win-strip" id="bannerWin">
-          <div class="banner-win-glow"></div>
-          <div class="banner-win-content">
-            <span class="banner-win-label">MENANG:</span>
-            <span class="banner-win-amount" id="bannerWinVal">Rp0,00</span>
-          </div>
+        <!-- Top Ways Plaque (e.g. 10800 CARA) -->
+        <div class="ways-plaque-holder" id="waysPlaque">
+          <img class="ways-bar-bg day-only" src="assets/sprites/neko/ui_top_ways_bar_tight.png" alt="" draggable="false" />
+          <img class="ways-bar-bg night-only" src="assets/sprites/neko/bns_waybar_tight.png" alt="" draggable="false" />
+          <div class="ways-sprites-box" id="waysSpritesBox"></div>
         </div>
-      </div>
+
+        <!-- 4-Cell Top Horizontal Reel (Above Columns 2, 3, 4, 5) -->
+        <div class="top-horizontal-reel-wrapper" id="topHorizontalReelWrapper">
+          <img class="top-reel-backplate day-only" src="assets/sprites/neko/ui_reel_top_02_tight.png" alt="" draggable="false" />
+          <img class="top-reel-backplate night-only" src="assets/sprites/neko/bns_reel_top_02_tight.png" alt="" draggable="false" />
+
+          <div class="top-reel-mask">
+            <div class="top-reel-board" id="topReelBoard"></div>
+          </div>
+
+          <img class="top-reel-frame day-only" src="assets/sprites/neko/ui_reel_top_01_tight.png" alt="" draggable="false" />
+          <img class="top-reel-frame night-only" src="assets/sprites/neko/bns_reel_top_01_tight.png" alt="" draggable="false" />
+        </div>
+      </section>
 
       <!-- ==========================================
-           4. WALLET PILLS & 5 ROUND BUTTONS
+           3. MAIN 6-COLUMN X 5-ROW REEL BOARD
            ========================================== -->
-      <footer class="game-footer">
+      <section class="main-reel-section" id="mainReelWrapper">
+        <img class="main-reel-backplate day-only" src="assets/sprites/neko/ui_reel_mid_02_tight.png" alt="" draggable="false" />
+        <img class="main-reel-backplate night-only" src="assets/sprites/neko/bns_reel_mid_02_tight.png" alt="" draggable="false" />
+
+        <div class="main-reel-mask">
+          <div class="neko-reel-board" id="reelBoard"></div>
+        </div>
+
+        <img class="main-reel-frame day-only" src="assets/sprites/neko/ui_reel_mid_01_tight.png" alt="" draggable="false" />
+        <img class="main-reel-frame night-only" src="assets/sprites/neko/bns_reel_mid_01_tight.png" alt="" draggable="false" />
+
+        <!-- Symbol Tap Payout Popup -->
+        <div class="symbol-payout-popup hidden" id="symbolPayoutPopup">
+          <div class="symbol-payout-card" id="symbolPayoutCard"></div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           4. SHRINE MID-SECTION: ROPE, INFOBOARD, CAT MULTIPLIER & BELI FITUR
+           ========================================== -->
+      <section class="shrine-mid-section" id="shrineMidSection">
+        <!-- Shrine Background (Day vs Night FreeSpins with Glowing Coins & Lanterns) -->
+        <img class="shrine-btm-bg day-only" src="assets/sprites/neko/ui_btm_bg.png" alt="" draggable="false" />
+        <img class="shrine-btm-bg night-only" src="assets/sprites/neko/bns_ui_btm_bg.png" alt="" draggable="false" />
+        <img class="shrine-btm-light night-only" src="assets/sprites/neko/ui_btm_bg_light_tight.png" alt="" draggable="false" />
+
+        <!-- Hanging Red Lanterns in Free Spins -->
+        <img class="shrine-lantern lantern-left night-only" src="assets/sprites/neko/ui_lantern_tight.png" alt="" draggable="false" />
+        <img class="shrine-lantern lantern-right night-only" src="assets/sprites/neko/ui_lantern_tight.png" alt="" draggable="false" />
+
+        <!-- 6 White Paper Shide Streamers hanging from the Shimenawa Rope -->
+        <img class="shide-streamer s1 day-only" src="assets/sprites/neko/ui_btm_bg_02_tight.png" alt="" draggable="false" />
+        <img class="shide-streamer s2 day-only" src="assets/sprites/neko/ui_btm_bg_02_tight.png" alt="" draggable="false" />
+        <img class="shide-streamer s3 day-only" src="assets/sprites/neko/ui_btm_bg_02_tight.png" alt="" draggable="false" />
+        <img class="shide-streamer s4 day-only" src="assets/sprites/neko/ui_btm_bg_02_tight.png" alt="" draggable="false" />
+        <img class="shide-streamer s5 day-only" src="assets/sprites/neko/ui_btm_bg_02_tight.png" alt="" draggable="false" />
+        <img class="shide-streamer s6 day-only" src="assets/sprites/neko/ui_btm_bg_02_tight.png" alt="" draggable="false" />
+
+        <!-- Shimenawa Rope Across Bottom of Reels -->
+        <img class="shimenawa-rope-top" src="assets/sprites/neko/ui_mid_ui_03_tight.png" alt="" draggable="false" />
+
+        <!-- Infoboard Wooden Marquee Banner -->
+        <div class="infoboard-holder" id="bannerWin">
+          <img class="ib-bar-bg" id="ibBarBg" src="assets/sprites/neko/ib_bar_a_tight.png" alt="" draggable="false" />
+
+          <!-- Idle Scrolling Tips (info_1_text .. info_4_text) -->
+          <div class="ib-tip-marquee" id="ibTipMarquee">
+            <img class="ib-tip-sprite" id="ibTipSprite" src="assets/sprites/neko/info_2_text_tight.png" alt="Menangkan hingga 32.400 cara!" draggable="false" />
+          </div>
+
+          <!-- Win / Total Win Sprite Display -->
+          <div class="ib-win-display hidden" id="ibWinDisplay">
+            <img class="ib-win-tag" id="ibWinTag" src="assets/sprites/neko/win_info_tight.png" alt="MENANG" draggable="false" />
+            <div class="ib-win-sprites" id="bannerWinVal"></div>
+          </div>
+
+          <img class="ib-mask mask-left" src="assets/sprites/neko/ib_bar_a_mask_tight.png" alt="" draggable="false" />
+          <img class="ib-mask mask-right" src="assets/sprites/neko/ib_bar_a_mask_tight.png" alt="" draggable="false" />
+        </div>
+
+        <!-- Shrine Lower Area: Cat Multiplier Display & Feature Buy Button -->
+        <div class="shrine-lower-bar">
+          <!-- Active Cat Multiplier Plaque -->
+          <div class="shrine-cat-multiplier" id="catBadge" title="Pengali Kucing (+2 setiap Kucing Emas)">
+            <img class="shrine-cat-ic" src="assets/sprites/neko/h_neko_a_tight.png" alt="Neko" draggable="false" />
+            <div class="shrine-cat-mult-sprites" id="catMultVal"></div>
+          </div>
+
+          <!-- Authentic BELI FITUR Signboard Button -->
+          <button type="button" class="feature-buy-btn" id="featureBuyBtn" title="Beli Fitur Putaran Gratis">
+            <img class="fb-btn-bg" src="assets/sprites/neko/fb_button_tight.png" alt="" draggable="false" />
+            <img class="fb-btn-txt" src="assets/sprites/neko/fb_tight.png" alt="BELI FITUR" draggable="false" />
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           5. BOTTOM WALLET BAR, WOODEN CONTROL PANEL & KOI POND FOOTER
+           ========================================== -->
+      <footer class="game-footer" id="gameFooter">
+        <!-- Wooden Panel & Koi Pond Background -->
+        <img class="footer-wood-bg day-only" src="assets/sprites/neko/ui_footer.png" alt="" draggable="false" />
+        <img class="footer-wood-bg night-only" src="assets/sprites/neko/bns_ui_footer.png" alt="" draggable="false" />
+
+        <!-- Lotus Lilypads in Koi Pond at Bottom -->
+        <div class="koi-pond-decor">
+          <img class="pond-lily lily-left day-only" src="assets/sprites/neko/ui_pool_02_a_tight.png" alt="" draggable="false" />
+          <img class="pond-lily lily-center day-only" src="assets/sprites/neko/ui_pool_02_c_tight.png" alt="" draggable="false" />
+          <img class="pond-lily lily-right day-only" src="assets/sprites/neko/ui_pool_02_b_tight.png" alt="" draggable="false" />
+          <img class="pond-lily lily-left night-only" src="assets/sprites/neko/bns_pool_02_a_tight.png" alt="" draggable="false" />
+          <img class="pond-lily lily-center night-only" src="assets/sprites/neko/bns_pool_02_c_tight.png" alt="" draggable="false" />
+          <img class="pond-lily lily-right night-only" src="assets/sprites/neko/bns_pool_02_b_tight.png" alt="" draggable="false" />
+        </div>
+
+        <!-- 3 Wallet Pills Row -->
         <div class="pg-wallet-pills-row">
-          <!-- Saldo Dompet -->
-          <div class="pg-pill-meter pill-left" id="walletMeterBtn" title="Klik untuk Tambah Demo Saldo">
-            <svg class="pill-icon-left" viewBox="0 0 36 36" fill="none">
-              <circle cx="15" cy="18" r="11" stroke="#ffffff" stroke-width="2.2"/>
-              <circle cx="15" cy="14.5" r="3.5" stroke="#ffffff" stroke-width="2"/>
-              <path d="M9.5 24.5C10.8 21.5 13 20.5 15 20.5C17 20.5 19.2 21.5 20.5 24.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-              <line x1="23" y1="8" x2="32" y2="8" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
-              <line x1="25" y1="12" x2="32" y2="12" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
-              <line x1="27" y1="16" x2="32" y2="16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
-            </svg>
+          <!-- Cash Wallet Balance -->
+          <div class="pg-pill-meter pill-left" id="walletMeterBtn" title="Klik untuk Isi Ulang Saldo Demo">
+            <div class="wallet-user-ic-wrap">
+              <img class="wallet-user-ic" src="assets/sprites/neko/user_offer_grey_tight.png" alt="" draggable="false" />
+              <img class="wallet-user-lines" src="assets/sprites/neko/menu-topright_grey_tight.png" alt="" draggable="false" />
+            </div>
             <span class="pill-value-text" id="balanceVal">Rp1.000.000,00</span>
           </div>
 
-          <!-- Kemenangan Terakhir / PG Shield -->
+          <!-- Center Win / PG Shield Pill -->
           <div class="pg-pill-meter pill-center" id="winMeterBtn">
-            <img class="pg-shield-icon" id="pgShieldIcon" src="assets/sprites/shield_pg.png" alt="PG" draggable="false" />
+            <img class="pg-shield-icon" id="pgShieldIcon" src="assets/sprites/neko/shield_grey_tight.png" alt="PG" draggable="false" />
             <div class="pill-win-box hidden" id="pillWinBox">
-              <img class="pill-win-tag" src="assets/sprites/win_icon.png" alt="WIN" draggable="false" />
+              <img class="pill-win-tag" src="assets/sprites/neko/win_tight.png" alt="WIN" draggable="false" />
               <span class="pill-win-val" id="winVal">Rp0,00</span>
             </div>
           </div>
 
-          <!-- Taruhan -->
+          <!-- Bet Amount Pill -->
           <div class="pg-pill-meter pill-right" id="betMeterBtn" title="Pengaturan Taruhan">
             <span class="pill-value-text" id="betVal">Rp2.000,00</span>
-            <img class="pill-icon-right" src="assets/sprites/bet_options.png" alt="$" draggable="false" />
+            <img class="pill-icon-right" src="assets/sprites/neko/bet_options_grey_tight.png" alt="$" draggable="false" />
           </div>
         </div>
 
-        <!-- 5 Iconic Round PG Soft Control Buttons -->
-        <div class="pg-controls-row">
+        <!-- 5 Iconic Control Buttons + Right Hamburger Menu inside Wooden Box -->
+        <div class="pg-controls-row" id="controlsRow">
           <!-- Turbo Button -->
           <button type="button" class="pg-round-btn" id="turboBtn" title="Spin Turbo">
-            <img class="btn-icon-sprite" id="turboIconImg" src="assets/sprites/turbo_off.png" alt="Turbo" draggable="false" />
+            <img class="round-btn-bg" src="assets/sprites/neko/round_bg.png" alt="" draggable="false" />
+            <img class="btn-icon-sprite" id="turboIconImg" src="assets/sprites/neko/turbo_off_tight.png" alt="Turbo" draggable="false" />
           </button>
 
           <!-- Minus Bet Button -->
           <button type="button" class="pg-round-btn" id="betMinusBtn" title="Kurangi Taruhan">
-            <img class="btn-icon-sprite icon-minus" src="assets/sprites/button_minus.png" alt="-" draggable="false" />
+            <img class="round-btn-bg" src="assets/sprites/neko/round_bg.png" alt="" draggable="false" />
+            <img class="btn-icon-sprite icon-minus" src="assets/sprites/neko/button_minus_grey_tight.png" alt="-" draggable="false" />
           </button>
 
-          <!-- Center Concentric Gold Spin Button -->
-          <button type="button" class="pg-jade-spin-btn" id="spinBtn" title="Putar (Spasi)">
-            <img class="spin-base-img" src="assets/sprites/spin_base.png" alt="Spin" draggable="false" />
-            <img class="spin-arrow-img" id="spinArrowImg" src="assets/sprites/spin_arrow.png" alt="" draggable="false" />
+          <!-- Center Lucky Neko Shimenawa Rope + Golden Bells Spin Button -->
+          <button type="button" class="neko-spin-btn" id="spinBtn" title="Putar (Spasi)">
+            <!-- Twin Hanging Golden Bells (Ling Long) -->
+            <div class="spin-bells-holder">
+              <img class="spin-bell bell-left" src="assets/sprites/neko/sb_button_extra_b_tight.png" alt="" draggable="false" />
+              <img class="spin-bell bell-right" src="assets/sprites/neko/sb_button_extra_a_tight.png" alt="" draggable="false" />
+            </div>
+            <!-- Red & White Shimenawa Rope Ring & Gold Drum -->
+            <img class="spin-base-img" src="assets/sprites/neko/sb_button_tight.png" alt="Spin" draggable="false" />
+            <!-- Rotating Spin Arrow -->
+            <img class="spin-arrow-img" id="spinArrowImg" src="assets/sprites/neko/sb_arrow_grey_tight.png" alt="" draggable="false" />
+            <!-- Auto Spin Active Overlay -->
+            <img class="spin-auto-ring hidden" id="spinAutoRing" src="assets/sprites/neko/sb_auto_tight.png" alt="" draggable="false" />
             <div class="auto-counter-badge" id="autoBadge">10</div>
           </button>
 
           <!-- Plus Bet Button -->
           <button type="button" class="pg-round-btn" id="betPlusBtn" title="Tambah Taruhan">
-            <img class="btn-icon-sprite icon-plus" src="assets/sprites/button_plus.png" alt="+" draggable="false" />
+            <img class="round-btn-bg" src="assets/sprites/neko/round_bg.png" alt="" draggable="false" />
+            <img class="btn-icon-sprite icon-plus" src="assets/sprites/neko/button_plus_grey_tight.png" alt="+" draggable="false" />
           </button>
 
           <!-- Auto Spin Button -->
           <button type="button" class="pg-round-btn" id="autoBtn" title="Putar Otomatis">
+            <img class="round-btn-bg" src="assets/sprites/neko/round_bg.png" alt="" draggable="false" />
             <div class="auto-icon-composite">
-              <img class="auto-circle-img" src="assets/sprites/autospin_circle_white.png" alt="" draggable="false" />
-              <img class="auto-play-img" src="assets/sprites/autospin_arrow_white.png" alt="Auto" draggable="false" />
+              <img class="auto-circle-img" src="assets/sprites/neko/autospin-circle_grey_tight.png" alt="" draggable="false" />
+              <img class="auto-play-img" src="assets/sprites/neko/autospin-arrow_grey_tight.png" alt="Auto" draggable="false" />
             </div>
+          </button>
+
+          <!-- Far-Right Hamburger Menu Icon (Matches PG Soft Footer) -->
+          <button type="button" class="pg-hamburger-btn" id="menuToggleBtn" title="Menu Pengaturan">
+            <img src="assets/sprites/neko/menu-center_grey_tight.png" alt="Menu" draggable="false" />
           </button>
         </div>
 
-        <!-- PG Soft Responsive Bottom Utility Strip -->
-        <div class="pg-mini-menu-row">
-          <button type="button" class="mini-menu-btn" id="soundToggleBtn"><span class="btn-ic" id="soundIc">🔊</span><span class="btn-lbl" id="soundLbl">Suara</span></button>
-          <button type="button" class="mini-menu-btn" id="paytableBtn"><span class="btn-ic">📜</span><span class="btn-lbl">Bayaran</span></button>
-          <button type="button" class="mini-menu-btn" id="historyBtn"><span class="btn-ic">🕒</span><span class="btn-lbl">Riwayat</span></button>
-          <button type="button" class="mini-menu-btn install-app-btn" id="installPwaBtn"><span class="btn-ic">📲</span><span class="btn-lbl">Install</span></button>
+        <!-- Free Spins Remaining Counter Overlay (Replaces Controls Row during Free Spins) -->
+        <div class="free-spin-counter-bar hidden" id="freeSpinCounterBar">
+          <img class="rfs-label-img" id="rfsLabelImg" src="assets/sprites/neko/rfs_tight.png" alt="SISA PUTARAN GRATIS" draggable="false" />
+          <div class="rfs-count-sprites" id="rfsCountSprites"></div>
+          <img class="lfs-label-img hidden" id="lfsLabelImg" src="assets/sprites/neko/lfs_tight.png" alt="PUTARAN GRATIS TERAKHIR" draggable="false" />
+        </div>
+
+        <!-- Slide-up Utility Menu Strip (Toggled by Hamburger Button) -->
+        <div class="pg-utility-drawer hidden" id="utilityDrawer">
+          <button type="button" class="mini-menu-btn" id="soundToggleBtn">
+            <img class="util-sp-ic" id="soundSpIc" src="assets/sprites/neko/sound_on_tight.png" alt="Suara" />
+            <span class="btn-lbl" id="soundLbl">Suara</span>
+          </button>
+          <button type="button" class="mini-menu-btn" id="paytableBtn">
+            <span class="btn-ic">📜</span>
+            <span class="btn-lbl">Bayaran</span>
+          </button>
+          <button type="button" class="mini-menu-btn" id="rulesBtn">
+            <span class="btn-ic">📖</span>
+            <span class="btn-lbl">Aturan</span>
+          </button>
+          <button type="button" class="mini-menu-btn" id="historyBtn">
+            <span class="btn-ic">🕒</span>
+            <span class="btn-lbl">Riwayat</span>
+          </button>
+          <button type="button" class="mini-menu-btn install-app-btn" id="installPwaBtn">
+            <span class="btn-ic">📲</span>
+            <span class="btn-lbl">Install</span>
+          </button>
         </div>
       </footer>
 
       <!-- ==========================================
-           5. BIG WIN / FREE SPINS MODAL
+           6. AUTHENTIC FEATURE BUY MODAL (fb_window)
            ========================================== -->
-      <div class="celebration-modal" id="celebModal">
-        <canvas id="coinCanvas"></canvas>
-        <div class="celebration-rays"></div>
-        <div class="celebration-box">
-          <div class="celebration-title" id="celebTitle">MENANG BESAR</div>
-          <div class="celebration-amount" id="celebAmount">Rp0,00</div>
+      <div class="neko-modal-overlay" id="featureBuyModal">
+        <div class="fb-dialog-box">
+          <img class="fb-window-bg" src="assets/sprites/neko/fb_window_tight.png" alt="" draggable="false" />
+          <img class="fb-modal-title" src="assets/sprites/neko/fb_tight.png" alt="BELI FITUR" draggable="false" />
+          <img class="fb-modal-cost-lbl" src="assets/sprites/neko/fb_cost_tight.png" alt="BIAYA" draggable="false" />
+          <div class="fb-modal-price" id="fbModalPrice">Rp150.000,00</div>
+          <img class="fb-modal-desc" src="assets/sprites/neko/fb_des_tight.png" alt="Beli fitur akan langsung memicu Putaran Gratis" draggable="false" />
+
+          <div class="fb-modal-actions">
+            <button type="button" class="fb-action-btn" id="fbCancelBtn">
+              <img class="fb-act-bg" src="assets/sprites/neko/fb_cancel.png" alt="" draggable="false" />
+              <img class="fb-act-txt" src="assets/sprites/neko/fb_cancel_btn_tight.png" alt="TIDAK, TERIMA KASIH" draggable="false" />
+            </button>
+            <button type="button" class="fb-action-btn" id="fbConfirmBtn">
+              <img class="fb-act-bg" src="assets/sprites/neko/fb_start.png" alt="" draggable="false" />
+              <img class="fb-act-txt" src="assets/sprites/neko/fb_start_btn_tight.png" alt="MULAI" draggable="false" />
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- ==========================================
-           6. DRAWERS & MODALS (BET, AUTO, HISTORY, PAYTABLE)
+           7. FREE SPINS BONUS INTRO SCREEN (fs_bg.jpg)
+           ========================================== -->
+      <div class="fs-intro-modal" id="fsIntroModal">
+        <img class="fs-intro-bg" src="assets/sprites/neko/fs_bg.jpg" alt="" draggable="false" />
+        <img class="fs-intro-cat" src="assets/sprites/neko/bl_page_01_tight.png" alt="" draggable="false" />
+        <div class="fs-intro-content">
+          <div class="fs-won-count" id="fsWonCountSprites"></div>
+          <img class="fs-won-title" src="assets/sprites/neko/fsw_tight.png" alt="PUTARAN GRATIS YANG DIMENANGKAN" draggable="false" />
+          <img class="fs-won-desc" src="assets/sprites/neko/des_bonus_loading_tight.png" alt="Semua pengali kemenangan meningkat sebesar 2 untuk setiap simbol Kucing!" draggable="false" />
+          <button type="button" class="fs-start-btn" id="fsStartBtn">
+            <img class="fs-start-bg" src="assets/sprites/neko/start_button_tight.png" alt="" draggable="false" />
+            <img class="fs-start-txt" src="assets/sprites/neko/start_btn_tight.png" alt="MULAI" draggable="false" />
+          </button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           8. BIG WIN / MEGA WIN / SUPER MEGA WIN / TOTAL WIN MODAL
+           ========================================== -->
+      <div class="celebration-modal" id="celebModal">
+        <img class="celeb-bg-img" src="assets/sprites/neko/tw_bg.jpg" alt="" draggable="false" />
+        <div class="celebration-rays"></div>
+        <img class="celeb-cat-emblem" src="assets/sprites/neko/bl_page_01_tight.png" alt="" draggable="false" />
+        <div class="celebration-box">
+          <img class="celeb-title-img" id="celebTitleImg" src="assets/sprites/neko/bw_tight.png" alt="MENANG BESAR" draggable="false" />
+          <div class="celebration-title hidden" id="celebTitle">MENANG BESAR</div>
+          <div class="celeb-amount-sprites" id="celebAmountSprites"></div>
+          <div class="celebration-amount" id="celebAmount">Rp0,00</div>
+          <button type="button" class="celeb-collect-btn" id="celebCollectBtn">
+            <img class="collect-bg" src="assets/sprites/neko/collect_tight.png" alt="" draggable="false" />
+            <img class="collect-txt" src="assets/sprites/neko/collect_btn_tight.png" alt="KUMPULKAN" draggable="false" />
+          </button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           9. DRAWERS & MODALS (BET, AUTO, HISTORY, PAYTABLE)
            ========================================== -->
       <div class="sheet-modal" id="betSheetModal">
         <div class="sheet-box">
           <div class="sheet-header">
-            <div class="sheet-title">Pilih Taruhan</div>
+            <div class="sheet-title">Pengaturan Taruhan</div>
             <button type="button" class="sheet-close" id="closeBetSheetBtn">✕</button>
           </div>
           <div class="bet-options-grid" id="betOptionsGrid"></div>
@@ -249,8 +417,8 @@
             <button type="button" class="auto-opt-btn" data-spins="10">10</button>
             <button type="button" class="auto-opt-btn" data-spins="30">30</button>
             <button type="button" class="auto-opt-btn" data-spins="50">50</button>
-            <button type="button" class="auto-opt-btn" data-spins="100">100</button>
-            <button type="button" class="auto-opt-btn" data-spins="999">∞</button>
+            <button type="button" class="auto-opt-btn" data-spins="80">80</button>
+            <button type="button" class="auto-opt-btn" data-spins="1000">1000</button>
           </div>
         </div>
       </div>
@@ -262,10 +430,21 @@
             <button type="button" class="sheet-close" id="closePaytableBtn">✕</button>
           </div>
           <p class="sheet-desc">
-            • <strong>Kucing Keberuntungan (Neko)</strong>: Setiap simbol Kucing Emas yang mendarat menambahkan <strong>+2 Pengali Kemenangan</strong>.<br />
-            • <strong>Putaran Gratis</strong>: 4 Scatter memicu <strong>10 Putaran Gratis</strong>. Selama Putaran Gratis, Pengali Kucing <strong>TIDAK DI-RESET</strong>!
+            • <strong>PengaliSimbol Kucing</strong>: Setiap simbol Kucing yang muncul pada gulungan meningkatkan pengali kemenangan sebesar <strong>+2</strong>!<br />
+            • <strong>Wilds-on-the-Way</strong>: Simbol berbingkai Perak berubah menjadi Bingkai Emas setelah menang, lalu berubah menjadi <strong>WILD</strong>!<br />
+            • <strong>Fitur Putaran Gratis</strong>: 4 simbol Scatter memicu <strong>10 Putaran Gratis</strong> (+2 putaran untuk setiap Scatter tambahan).
           </p>
           <div class="paytable-grid" id="paytableGrid"></div>
+        </div>
+      </div>
+
+      <div class="sheet-modal" id="historyModal">
+        <div class="sheet-box">
+          <div class="sheet-header">
+            <div class="sheet-title">Riwayat Permainan</div>
+            <button type="button" class="sheet-close" id="closeHistoryBtn">✕</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
         </div>
       </div>
 
@@ -285,9 +464,9 @@
     </main>
   </div>
 
-  <script src="js/audio.js"></script>
-  <script src="js/tiles.js"></script>
-  <script src="js/game.js"></script>
-  <script src="js/pin.js"></script>
+  <script src="js/audio.js?v=3.0"></script>
+  <script src="js/tiles.js?v=3.0"></script>
+  <script src="js/game.js?v=3.0"></script>
+  <script src="js/pin.js?v=3.0"></script>
 </body>
 </html>
